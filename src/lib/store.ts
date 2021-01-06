@@ -3,29 +3,16 @@ import { action, observable, makeObservable } from 'mobx';
 class Store {
     constructor() {
         makeObservable(this)
+        this.notify = this.notify.bind(this)
     }
 
     @action
-    notify(msg: string | Error | null) {
-        if (!msg) {
-            this.message = [];
-        } else if (typeof msg === 'string') {
-            this.message = [msg]
-        } else {
-            this.message = [msg.message]
-        }
-    }
-
-    @action
-    setAuth(auth: string | null) {
-        this.auth = auth
+    notify(msg?: string | Error | null) {
+        this.message = (msg as Error)?.message || msg as string | null
     }
 
     @observable
-    message: string[] = []
-
-    @observable
-    auth: string | null = sessionStorage.getItem('token')
+    message?: string | null
 }
 
 export default new Store();
