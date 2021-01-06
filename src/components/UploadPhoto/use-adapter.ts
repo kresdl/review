@@ -2,17 +2,13 @@ import firebase from "firebase/app"
 import { useReducer } from "react"
 import { useMounted } from "lib/hooks"
 import { reducer } from "./reducer"
-import { uploadPhoto } from "lib/db"
+import { uploadPhoto } from 'lib/storage'
 
 const useAdapter = () => {
     const mounted = useMounted()
-    const [{ file, progress, error }, dispatch] = useReducer(reducer, {})
+    const [{ progress, error }, dispatch] = useReducer(reducer, {})
 
-    const select = (file: File) => {
-        dispatch({ type: 'select', file })
-    }
-
-    const upload = () => new Promise<string>((resolve, reject) => {
+    const upload = (file: File) => new Promise<string>((resolve, reject) => {
         const task = uploadPhoto(file!)
 
         const unsubscribe = task.on(
@@ -33,12 +29,12 @@ const useAdapter = () => {
             async () => {
                 if (mounted.current) dispatch({ type: 'uploaded' })
                 unsubscribe()
-                resolve(task.snapshot.ref.fullPath)
+                resolve(task.snapshot.ref.name)
             }
         )
     })
 
-    return { select, upload, file, progress, error }
+    return { upload, progress, error }
 }
 
 export default useAdapter

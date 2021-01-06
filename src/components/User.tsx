@@ -3,6 +3,7 @@ import Sidebar from './Sidebar'
 import styled from '@emotion/styled'
 import { Route } from 'react-router-dom'
 import AlbumEditor from './AlbumEditor'
+import Album from './Album'
 
 const Wrapper = styled.div`
   @media screen and (min-width: 768px) {
@@ -21,6 +22,9 @@ const User: React.FC = () => {
           <main className="col-md pt-5 px-3">
             <Route path="/user/albums">
               <AlbumEditor />
+            </Route>
+            <Route path="/user/album">
+              <Album />
             </Route>
           </main>
         </Wrapper>

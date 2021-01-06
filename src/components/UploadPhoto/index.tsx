@@ -1,45 +1,51 @@
 import React from 'react'
-import Input from '../Input'
-import Submit from '../Submit'
+import { useRouteMatch } from 'react-router-dom'
 import FileInput from '../FileInput'
-import Attachment from '../Attachment'
 import ProgressBar from '../ProgressBar'
 import useAdapter from './use-adapter'
+import { useOptimistic } from 'lib/hooks'
+import { Photo } from 'types'
+import { addPhotoToAlbum } from 'lib/db'
 
-type Props = {
-  onUpload: (path: string) => Promise<void>
+type Params = {
+  album: string
 }
 
-const UploadPhoto: React.FC<Props> = ({ onUpload }) => {
+const UploadPhoto: React.FC = () => {
+  const { album } = useRouteMatch<Params>('/user/album/:album')!.params
+  const { upload, progress, error } = useAdapter()
 
-  const submit = async (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
-
-    const form = evt.target as HTMLFormElement
-    const path = await upload()
-
+  const select = async (file: File) => {
     try {
-      await onUpload(path)
-      form.reset()
+      const path = await store(file)
+      await addPhotoToAlbum(album, path)
 
     } catch (err) {
       console.log(err)
     }
   }
 
-  const { select, upload, file, progress, error } = useAdapter()
+  const store = useOptimistic(
+    ['albums', album],
+    (file: File) => upload(file),
+    (old: Photo[], file: File) => {
+      const temp = {
+        url: URL.createObjectURL(file),
+        path: file?.name
+      }
+
+      return [...old, temp]
+    },
+    []
+  )
+
   const uploading = typeof progress === 'number'
 
   return (
-    <form onSubmit={submit}>
-      <Input autoComplete="off" required autoFocus={true} name="title" label="Title" />
-      <Input autoComplete="off" name="comment" label="Comment (optional)" />
+    <>
       <FileInput required onPick={select} />
-      {file && <Attachment file={file} />}
-      <Submit>Upload</Submit>
       {error && <p>{error.message}</p>}
-      {uploading && <ProgressBar progress={progress!} />}
-    </form>
+    </>
   )
 }
 

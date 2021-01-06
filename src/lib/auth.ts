@@ -1,2 +1,10 @@
 import firebase from 'firebase/app'
-export default firebase.auth()
+const auth = firebase.auth()
+
+export default auth
+
+export const getUser = () => {
+    const user = auth.currentUser
+    if (!user) throw Error('Not logged in')
+    return user
+}

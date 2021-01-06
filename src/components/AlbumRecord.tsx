@@ -3,6 +3,7 @@ import { Album } from 'types'
 import styled from '@emotion/styled'
 import { deleteAlbum } from 'lib/db'
 import { useOptimistic } from 'lib/hooks'
+import { Link } from 'react-router-dom'
 
 const H2 = styled.h2`
   font-size: 1.2rem;
@@ -24,7 +25,9 @@ const AlbumRecord: React.FC<Album> = ({ title }) => {
 
   return (
     <Div className="d-flex align-items-center p-3 border rounded">
-      <H2 className="mb-1">{title}</H2>
+      <Link to={`/user/album/${title}`}>
+        <H2 className="mb-1">{title}</H2>
+      </Link>
       <button className="close ml-auto" onClick={discard}>&times;</button>
     </Div>
   )

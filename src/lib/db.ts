@@ -1,19 +1,14 @@
 import firebase from 'firebase/app'
 import auth from './auth'
 import { Album } from 'types'
+import { getUser } from 'lib/auth'
 
 const db = firebase.firestore()
-
-const getUser = () => {
-    const user = auth.currentUser
-    if (!user) throw Error('Not logged in')
-    return user
-}
 
 type Snapshot = firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
 
 const toIndexed = (snapshot: Snapshot) => 
-({ id: snapshot.id, ...snapshot.data() })
+    ({ id: snapshot.id, ...snapshot.data() })
 
 export default db
 
@@ -29,7 +24,7 @@ export const addAlbum = (title: string) => {
         .doc(user.uid)
         .collection('albums')
         .doc(title)
-        .set({ title, photos: [] })    
+        .set({ title, photos: [] }) 
 }
   
 export const getAlbums = async () => {
@@ -43,14 +38,16 @@ export const getAlbums = async () => {
     return snapshot.docs.map(toIndexed) as Album[];
 }
   
-export const getAlbum = (albumId: string) => {
+export const getAlbum = async (albumId: string) => {
     const user = getUser()
 
-    return db.collection('users')
+    const snapshot = await db.collection('users')
         .doc(user.uid)
         .collection('albums')
         .doc(albumId)
         .get()
+    
+    return snapshot.data() as Album
 }
 
 export const addPhotoToAlbum = (albumId: string, photoPath: string) => {
@@ -82,14 +79,3 @@ export const deleteAlbum = (albumId: string) => {
         .doc(albumId)
         .delete()
 }
-
-export const getPhotos = () => {
-    return firebase.storage().ref().listAll()
-}
-
-export const uploadPhoto = (file: File) => {
-    const r = firebase.storage().ref()
-    const c = r.child(file.name)
-    return c.put(file)
-}
-
