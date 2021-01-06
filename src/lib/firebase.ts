@@ -1,3 +1,7 @@
+import 'firebase/auth'
+import 'firebase/storage'
+import 'firebase/firestore'
+
 import firebase from 'firebase/app'
 
 firebase.initializeApp({
