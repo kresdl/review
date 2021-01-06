@@ -17,8 +17,8 @@ const AlbumSelect: React.FC<Props> = ({ albums, onChange, selected, disabled }) 
   return (
     <select className={`custom-select ${disabled}`} defaultValue={selected} onChange={change} disabled={disabled}>
       {
-        albums?.map(({ title, id }) =>
-          <option key={id} value={id}>{title}</option>
+        albums?.map(({ title }) =>
+          <option key={title} value={title}>{title}</option>
         )
       }
     </select>

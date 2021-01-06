@@ -1,11 +1,19 @@
 import React from 'react'
 import Input from './Input'
 import Submit from './Submit'
-import { addAlbum } from 'lib/op'
+import { addAlbum } from 'lib/db'
 import { useQueryClient } from 'react-query'
+import { useOptimistic } from 'lib/hooks'
+import { Album } from 'types'
 
 const UploadAlbum: React.FC = () => {
   const queryClient = useQueryClient()
+  const add = useOptimistic(
+    'albums',
+    (title: string) => addAlbum(title),
+    (old: Album[], title: string) => [...old, { id: title, title }],
+    []
+  )
 
   const submit: React.FormEventHandler<HTMLFormElement> = async e => {
     e.preventDefault()
@@ -15,7 +23,7 @@ const UploadAlbum: React.FC = () => {
     const { value: title } = em
 
     try {
-      await addAlbum(title)
+      await add(title)
       queryClient.invalidateQueries('albums')
       form.reset()
       em.focus()

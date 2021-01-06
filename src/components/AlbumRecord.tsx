@@ -1,7 +1,7 @@
 import React from 'react'
 import { Album } from 'types'
 import styled from '@emotion/styled'
-import { deleteAlbum } from 'lib/op'
+import { deleteAlbum } from 'lib/db'
 import { useOptimistic } from 'lib/hooks'
 
 const H2 = styled.h2`
@@ -13,12 +13,12 @@ const Div = styled.div`
   margin-bottom: -1px
 `
 
-const AlbumRecord: React.FC<Album> = ({ id, title }) => {
+const AlbumRecord: React.FC<Album> = ({ title }) => {
 
   const discard = useOptimistic(
     'albums',
-    () => deleteAlbum(id),
-    (old: Album[]) => old.filter(album => album.id !== id),
+    () => deleteAlbum(title),
+    (old: Album[]) => old.filter(album => album.title !== title),
     []
   )
 

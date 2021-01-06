@@ -4,15 +4,15 @@ export type Stylable = {
 
 export type Extend<T extends HTMLElement> = React.HTMLProps<T> & React.HTMLAttributes<T>;
 
-export type Saved = {
-  id: string
-}
-
 export type Titled = {
   title: string
 }
 
-export type Album = Saved & Titled & {
+export type Indexed = {
+  id: string
+}
+
+export type Album = Titled & Indexed & {
   photos: string[]
 }
 

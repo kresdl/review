@@ -1,4 +1,7 @@
-import { Titled } from "types"
+import { Titled, Indexed } from "types"
 
-export const byTitle = (a: Titled, b: Titled) =>
+export const byTitle = <T extends Titled>(a: T, b: T) =>
     a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1
+
+export const toIndexed = <T extends Titled>(item: T): T & Indexed => 
+    ({ id: item.title, ...item })

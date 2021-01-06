@@ -2,6 +2,7 @@ import React from 'react'
 import { Album } from 'types'
 import AlbumRecord from './AlbumRecord'
 import Collapsable from './Collapsable'
+import { toIndexed } from 'lib/util'
 
 type Props = {
   items?: Album[]
@@ -10,7 +11,7 @@ type Props = {
 }
 
 const Albums: React.FC<Props> = ({ items, disabled, select }) =>
-  <Collapsable className="list-group" duration={500} items={items}>
+  <Collapsable className="list-group" duration={500} items={items?.map(toIndexed)}>
     {
       (item, style, ref) => {
         const props = {

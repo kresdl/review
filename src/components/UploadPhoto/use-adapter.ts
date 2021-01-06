@@ -2,7 +2,7 @@ import firebase from "firebase/app"
 import { useReducer } from "react"
 import { useMounted } from "lib/hooks"
 import { reducer } from "./reducer"
-import { uploadPhoto } from "lib/op"
+import { uploadPhoto } from "lib/db"
 
 const useAdapter = () => {
     const mounted = useMounted()

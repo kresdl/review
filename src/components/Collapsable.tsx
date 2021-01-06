@@ -2,7 +2,7 @@ import React, { CSSProperties, useCallback, useRef } from 'react'
 import { TransitionGroup, Transition } from 'react-transition-group'
 import { TransitionStatus } from 'react-transition-group/Transition'
 import { TransitionGroupProps } from 'react-transition-group/TransitionGroup'
-import { Saved } from 'types'
+import { Indexed } from 'types'
 
 type HasClientHeight = {
   clientHeight: number | string
@@ -43,7 +43,7 @@ type Props<T> = React.PropsWithoutRef<TransitionGroupProps> & {
   children: (item: T, style: CSSProperties | undefined, ref: (em: HasClientHeight | null) => void) => React.ReactNode,
 }
 
-const Collapsable = <T extends Saved>({ items, children, duration, ...rest }: Props<T>): React.ReactElement => {
+const Collapsable = <T extends Indexed>({ items, children, duration, ...rest }: Props<T>): React.ReactElement => {
   const { styles, ref } = useCollapse(duration)
 
   return (

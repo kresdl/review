@@ -3,11 +3,10 @@ import UploadAlbum from './UploadAlbum'
 import Albums from './Albums'
 import { byTitle } from 'lib/util'
 import { useQuery } from 'react-query'
-import { getAlbums } from 'lib/op'
-import { Album } from 'types'
+import { getAlbums } from 'lib/db'
 
 const AlbumEditor: React.FC = () => {
-  const albums = useQuery<Album[], Error>('albums', getAlbums)
+  const albums = useQuery('albums', getAlbums)
 
   return (
     <div className="row">
