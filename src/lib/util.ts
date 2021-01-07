@@ -1,4 +1,4 @@
-import { Titled, Indexed } from "types"
+import { Titled } from "types"
 
 export const byTitle = <T extends Titled>(a: T, b: T) =>
     a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1

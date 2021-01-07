@@ -3,8 +3,8 @@ import Input from './Input'
 import SubmitCancel from './SubmitCancel'
 import { useHistory } from 'react-router-dom'
 import store from 'lib/store'
-import firebase from 'firebase/app'
 import { addUser } from 'lib/db'
+import { register } from 'lib/auth'
 
 const Register: React.FC = () => {
   useEffect(store.notify, [])
@@ -31,7 +31,7 @@ const Register: React.FC = () => {
     store.notify('Registering...')
 
     try {
-      const cred = await firebase.auth().createUserWithEmailAndPassword(email, password)
+      const cred = await register(email, password)
       await addUser(cred.user!.uid, name, lastName, email)
       store.notify('Register successful!')
       history.push('/')

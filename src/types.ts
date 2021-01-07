@@ -27,3 +27,7 @@ export type Photo = {
   url: string
   name: string
 }
+
+export type Stat = {
+  count: number
+}

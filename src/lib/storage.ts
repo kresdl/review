@@ -2,19 +2,25 @@ import firebase from 'firebase/app'
 import { getUser } from 'lib/auth'
 import { Photo } from 'types'
 
-export const getPhoto = async (photo: string): Promise<Photo> => {
-    const user = getUser()
-    const ref = firebase.storage().ref().child(user + '/' + photo)
-    const url = await ref.getDownloadURL()
+export const get = async (name: string): Promise<Photo> => {
+    const ref = firebase.storage()
+        .ref()
+        .child(getUser().uid + '/' + name)
 
     return { 
         name: ref.name, 
-        url 
+        url: await ref.getDownloadURL()
     }
 }
 
-export const uploadPhoto = (file: File) => {
-    const user = getUser()
-    return firebase.storage().ref().child(user + '/' + file.name).put(file)
-}
+export const put = (file: File) =>
+    firebase.storage()
+        .ref()
+        .child(getUser().uid + '/' + file.name)
+        .put(file)
 
+export const del = (name: string) =>
+    firebase.storage()
+        .ref()
+        .child(getUser().uid + '/' + name)
+        .delete()

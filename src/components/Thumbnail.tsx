@@ -3,7 +3,6 @@ import { space, SpaceProps } from 'styled-system'
 
 const Thumbnail = styled.div<{ url: string } & SpaceProps>`
     display: inline-block;
-    vertical-align: middle;
     background-image: url(${p => p.url});
     background-size: contain;
     background-repeat: no-repeat;
@@ -11,8 +10,8 @@ const Thumbnail = styled.div<{ url: string } & SpaceProps>`
     background-position: center;
     width: 120px;
     height: 120px;
-    position: relative;
     flex-shrink: 0;
+    border-radius: 4px;
     ${space}
 `
 

@@ -1,18 +1,20 @@
 import React from 'react'
 import Input from './Input'
-import Submit from './Submit'
 import { addAlbum } from 'lib/db'
-import { useQueryClient } from 'react-query'
 import { useOptimistic } from 'lib/hooks'
 import { Album } from 'types'
 
 const UploadAlbum: React.FC = () => {
-  const queryClient = useQueryClient()
-  const add = useOptimistic(
+  const mutation = useOptimistic(
     'albums',
     (title: string) => addAlbum(title),
-    (old: Album[], title: string) => [...old, { id: title, title }],
-    []
+    (old: Album[], title: string) => [...old, { 
+      id: title, 
+      title, 
+      photos: [] 
+    }],
+    [],
+    { rethrow: true }
   )
 
   const submit: React.FormEventHandler<HTMLFormElement> = async e => {
@@ -23,8 +25,7 @@ const UploadAlbum: React.FC = () => {
     const { value: title } = em
 
     try {
-      await add(title)
-      queryClient.invalidateQueries('albums')
+      await mutation.mutate(title)
       form.reset()
       em.focus()
     } catch {}
@@ -33,7 +34,8 @@ const UploadAlbum: React.FC = () => {
   return (
     <form onSubmit={submit}>
       <Input autoFocus={false} label="Title" required />
-      <Submit>Upload</Submit>
+      <button className="btn btn-primary" type="submit">Upload</button>
+      {mutation.error && <span className="text-danger">{mutation.error}</span>}
     </form>
   )
 }

@@ -16,7 +16,7 @@ const Div = styled.div`
 
 const AlbumRecord: React.FC<Album> = ({ title }) => {
 
-  const discard = useOptimistic(
+  const mutation = useOptimistic(
     'albums',
     () => deleteAlbum(title),
     (old: Album[]) => old.filter(album => album.title !== title),
@@ -28,7 +28,7 @@ const AlbumRecord: React.FC<Album> = ({ title }) => {
       <Link to={`/user/album/${title}`}>
         <H2 className="mb-1">{title}</H2>
       </Link>
-      <button className="close ml-auto" onClick={discard}>&times;</button>
+      <button className="close ml-auto" onClick={mutation.mutate}>&times;</button>
     </Div>
   )
 }

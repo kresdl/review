@@ -1,11 +1,14 @@
 import React from "react";
 import { Extend } from "types";
+import { space, SpaceProps } from 'styled-system'
+import styled from '@emotion/styled'
 
 type Props = {
+    label: string
     onPick: (file: File) => void
 }
 
-const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, ...props }) => {
+const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, className, label, ...props }) => {
     const change: React.ChangeEventHandler = (evt) => {
         const em = evt.target as HTMLInputElement
         const filelist = em.files
@@ -14,13 +17,11 @@ const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, ...prop
     }
 
     return (
-        <div className="form-group">
-            <label className="mb-0">
-                <input type="file" className="d-none" onChange={change} {...props} />
-                <span className="btn btn-secondary">Select file...</span>
-            </label>
-        </div>
+        <label className={"mb-0 " + className}>
+            <input type="file" className="d-none" onChange={change} {...props} />
+            <span className="btn btn-secondary">{label}</span>
+        </label>
     )
 }
 
-export default FileInput;
+export default styled(FileInput)<SpaceProps>(space);

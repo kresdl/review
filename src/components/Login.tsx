@@ -1,9 +1,8 @@
 import React from 'react'
 import Input from './Input'
-import Submit from './Submit'
 import { Link } from 'react-router-dom'
 import store from 'lib/store'
-import auth from 'lib/auth'
+import { signIn } from 'lib/auth'
 
 const Login: React.FC = () => {
 
@@ -14,7 +13,7 @@ const Login: React.FC = () => {
     const { value: password } = elements.namedItem('password') as HTMLInputElement
 
     store.notify('Attempting to log in...')
-    auth.signInWithEmailAndPassword(email, password).catch(store.notify)
+    signIn(email, password).catch(store.notify)
   }
 
   return (
@@ -22,7 +21,7 @@ const Login: React.FC = () => {
       <form onSubmit={login}>
         <Input type="email" required name="email" label="Email" autoComplete="on"/>
         <Input type="password" required name="password" label="Password" autoComplete="on"/>
-        <Submit>Login</Submit>
+        <button className="btn btn-primary" type="submit">Login</button>
       </form>
       <Link className="d-block form-group" to="/register">Register</Link>
     </>

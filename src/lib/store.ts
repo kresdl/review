@@ -1,5 +1,4 @@
 import { action, observable, makeObservable } from 'mobx';
-
 class Store {
     constructor() {
         makeObservable(this)
