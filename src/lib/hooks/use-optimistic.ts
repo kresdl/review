@@ -1,32 +1,45 @@
-import { useCallback } from "react";
-import { MutationFunction, useMutation, useQueryClient } from "react-query";
+import { useCallback, useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
+import { useMounted } from "lib/hooks";
 
-const useOptimistic = <P = unknown, V = unknown, D = unknown, C = unknown>(
+type Options = {
+    skipInvalidate?: boolean,
+    rethrow?: boolean,
+}
+
+const useOptimistic = <D, T, V>(
     cacheKey: any,
-    asyncFn: MutationFunction<D, V>,
-    optimisticFn: (old: P, vars: V) => C,
-    dependencies: any[]
+    asyncFn: (vars: V) => Promise<T>,
+    optimisticFn: (old: D, vars: V) => D,
+    dependencies: any[],
+    opt?: Options
 ) => {
-    const queryClient = useQueryClient();
-    const mutation = useMutation(asyncFn);
+    const mounted = useMounted()
+    const [error, setError] = useState<string | null>(null)
+    const queryClient = useQueryClient()
+    const mutation = useMutation<T, Error, V, D>(asyncFn)
 
-    return useCallback(
-        async (vars: V) => {
-            const oldData = queryClient.getQueryData(cacheKey, { exact: true }) as P;
-            let result: D;
-            try {
-                queryClient.setQueryData(cacheKey, optimisticFn(oldData, vars))
-                result = await mutation.mutateAsync(vars);
-            } catch (err) {
-                queryClient.setQueryData(cacheKey, oldData);
-                throw err;
-            } finally {
-                queryClient.invalidateQueries(cacheKey);
-            }
-            return result;
-        },
-        dependencies
-    );
+    return {
+        mutate: useCallback(
+            async (vars: V) => {
+                queryClient.cancelQueries(cacheKey)
+                const oldData = queryClient.getQueryData<D>(cacheKey, { exact: true })!
+                try {
+                    queryClient.setQueryData(cacheKey, optimisticFn(oldData, vars))
+                    const result = await mutation.mutateAsync(vars)
+                    return result
+                } catch (err) {
+                    queryClient.setQueryData(cacheKey, oldData)
+                    mounted.current && setError(err.message)
+                    if (opt?.rethrow) throw err
+                } finally {
+                    if (!opt || !opt.skipInvalidate) queryClient.invalidateQueries(cacheKey)
+                }
+            },
+            dependencies
+        ),
+        error
+    }
 }
 
 export default useOptimistic
