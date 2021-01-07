@@ -25,5 +25,5 @@ export type User = {
 
 export type Photo = {
   url: string
-  path: string
+  name: string
 }

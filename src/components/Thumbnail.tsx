@@ -9,9 +9,10 @@ const Thumbnail = styled.div<{ url: string } & SpaceProps>`
     background-repeat: no-repeat;
     background-color: black;
     background-position: center;
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
     position: relative;
+    flex-shrink: 0;
     ${space}
 `
 

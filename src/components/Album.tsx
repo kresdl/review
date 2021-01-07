@@ -20,8 +20,8 @@ const Album: React.FC = () => {
 
   const photos = useQuery(['albums', album], async () => {
     const { photos } = await getAlbum(album)
-    const urls = await Promise.all(photos.map(getPhoto))
-    return urls
+    const data = await Promise.all(photos.map(getPhoto))
+    return data
   })
 
   return (
@@ -29,8 +29,8 @@ const Album: React.FC = () => {
       <UploadPhoto />
       <div className="d-flex">
         {
-          photos.data?.map(url => (
-            <Thumbnail key={url} url={url} />
+          photos.data?.map(({ name, url }) => (
+            <Thumbnail key={name} url={url} />
           ))
         }
       </div>

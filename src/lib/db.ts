@@ -1,5 +1,4 @@
 import firebase from 'firebase/app'
-import auth from './auth'
 import { Album } from 'types'
 import { getUser } from 'lib/auth'
 
@@ -38,44 +37,44 @@ export const getAlbums = async () => {
     return snapshot.docs.map(toIndexed) as Album[];
 }
   
-export const getAlbum = async (albumId: string) => {
+export const getAlbum = async (album: string) => {
     const user = getUser()
 
     const snapshot = await db.collection('users')
         .doc(user.uid)
         .collection('albums')
-        .doc(albumId)
+        .doc(album)
         .get()
     
     return snapshot.data() as Album
 }
 
-export const addPhotoToAlbum = (albumId: string, photoPath: string) => {
+export const addPhotoToAlbum = (album: string, photo: string) => {
     const user = getUser()
 
     return db.collection('users')
         .doc(user.uid)
         .collection('albums')
-        .doc(albumId)
-        .update({ photos: firebase.firestore.FieldValue.arrayUnion(photoPath) })
+        .doc(album)
+        .update({ photos: firebase.firestore.FieldValue.arrayUnion(photo) })
 }
 
-export const removePhotoFromAlbum = (albumId: string, photoPath: string) => {
+export const removePhotoFromAlbum = (album: string, photo: string) => {
     const user = getUser()
 
     return db.collection('users')
         .doc(user.uid)
         .collection('albums')
-        .doc(albumId)
-        .update({ photos: firebase.firestore.FieldValue.arrayRemove(photoPath) })
+        .doc(album)
+        .update({ photos: firebase.firestore.FieldValue.arrayRemove(photo) })
 }
 
-export const deleteAlbum = (albumId: string) => {
+export const deleteAlbum = (album: string) => {
     const user = getUser()
 
     return db.collection('users')
         .doc(user.uid)
         .collection('albums')
-        .doc(albumId)
+        .doc(album)
         .delete()
 }

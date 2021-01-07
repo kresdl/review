@@ -17,8 +17,8 @@ const UploadPhoto: React.FC = () => {
 
   const select = async (file: File) => {
     try {
-      const path = await store(file)
-      await addPhotoToAlbum(album, path)
+      await store(file)
+      await addPhotoToAlbum(album, file.name)
 
     } catch (err) {
       console.log(err)
@@ -28,18 +28,14 @@ const UploadPhoto: React.FC = () => {
   const store = useOptimistic(
     ['albums', album],
     (file: File) => upload(file),
-    (old: Photo[], file: File) => {
-      const temp = {
+    (old: Photo[], file: File): Photo[] => [
+      ...old, {
         url: URL.createObjectURL(file),
-        path: file?.name
+        name: file?.name
       }
-
-      return [...old, temp]
-    },
+    ],
     []
   )
-
-  const uploading = typeof progress === 'number'
 
   return (
     <>

@@ -8,7 +8,7 @@ const useAdapter = () => {
     const mounted = useMounted()
     const [{ progress, error }, dispatch] = useReducer(reducer, {})
 
-    const upload = (file: File) => new Promise<string>((resolve, reject) => {
+    const upload = (file: File) => new Promise<void>((resolve, reject) => {
         const task = uploadPhoto(file!)
 
         const unsubscribe = task.on(
@@ -29,7 +29,7 @@ const useAdapter = () => {
             async () => {
                 if (mounted.current) dispatch({ type: 'uploaded' })
                 unsubscribe()
-                resolve(task.snapshot.ref.name)
+                resolve()
             }
         )
     })
