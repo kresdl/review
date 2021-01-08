@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 
 type Props = {
     label: string
-    onPick: (file: File) => void
+    onPick: (files: File[]) => void
 }
 
 const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, className, label, ...props }) => {
@@ -13,7 +13,9 @@ const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, classNa
         const em = evt.target as HTMLInputElement
         const filelist = em.files
         if (!filelist?.length) return;
-        onPick(filelist[0])
+        const files: File[] = []
+        files.push.apply(files, filelist as any)
+        onPick(files)
     }
 
     return (

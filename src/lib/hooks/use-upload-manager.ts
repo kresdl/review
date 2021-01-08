@@ -1,16 +1,33 @@
-import firebase from "firebase/app"
-import { useCallback, useReducer } from "react"
-import { useMounted } from "lib/hooks"
-import { reducer } from "./reducer"
-import { put } from 'lib/storage'
+import firebase from 'firebase/app'
+import { useCallback, useReducer } from 'react'
+import useMounted from './use-mounted'
 
-const useStorage = () => {
+type State = {
+    file?: File | null
+    progress?: number | null
+    error?: firebase.storage.FirebaseStorageError | null
+}
+
+type Action = State & {
+    type: 'busy' | 'end' | 'error'
+}
+
+const reducer: React.Reducer<State, Action> = (state, { type, error, progress }) => {
+    switch (type) {
+        case 'busy': return { ...state, error: null, progress }
+        case 'end': return {}
+        case 'error': return { ...state, progress: null, error }
+        default: return state
+    }
+}
+
+const useUploadManager = () => {
     const mounted = useMounted()
     const [{ progress, error }, dispatch] = useReducer(reducer, {})
 
     const upload = useCallback(
-        (file: File) => new Promise<void>((resolve, reject) => {
-            const unsubscribe = put(file!).on(
+        (task : firebase.storage.UploadTask) => new Promise<void>((resolve, reject) => {
+            const unsubscribe = task.on(
                 firebase.storage.TaskEvent.STATE_CHANGED,
 
                 snapshot => {
@@ -38,4 +55,4 @@ const useStorage = () => {
     return { upload, progress, error }
 }
 
-export default useStorage
+export default useUploadManager

@@ -6,15 +6,15 @@ import { Album } from 'types'
 
 const UploadAlbum: React.FC = () => {
   const mutation = useOptimistic(
-    'albums',
-    (title: string) => addAlbum(title),
-    (old: Album[], title: string) => [...old, { 
-      id: title, 
-      title, 
-      photos: [] 
-    }],
-    [],
-    { rethrow: true }
+    'albums', 
+    {
+      asyncFn: (title: string) => addAlbum(title),
+      optimisticFn: (old: Album[], title: string) => [...old, {
+        id: title,
+        title,
+        photos: []
+      }]
+    }, []
   )
 
   const submit: React.FormEventHandler<HTMLFormElement> = async e => {
@@ -28,7 +28,7 @@ const UploadAlbum: React.FC = () => {
       await mutation.mutate(title)
       form.reset()
       em.focus()
-    } catch {}
+    } catch { }
   }
 
   return (

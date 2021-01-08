@@ -4,36 +4,43 @@ import { useMounted } from "lib/hooks";
 
 type Options = {
     skipInvalidate?: boolean,
-    rethrow?: boolean,
+}
+
+type Config<D, T, V> = {
+    asyncFn: (vars: V) => Promise<T>,
+    optimisticFn: (old: D, vars: V) => D,
+    opt?: Options
 }
 
 const useOptimistic = <D, T, V>(
     cacheKey: any,
-    asyncFn: (vars: V) => Promise<T>,
-    optimisticFn: (old: D, vars: V) => D,
+    config: Config<D, T, V>,
     dependencies: any[],
-    opt?: Options
 ) => {
     const mounted = useMounted()
     const [error, setError] = useState<string | null>(null)
     const queryClient = useQueryClient()
-    const mutation = useMutation<T, Error, V, D>(asyncFn)
+    const mutation = useMutation<T, Error, V, D>(config.asyncFn)
 
     return {
         mutate: useCallback(
             async (vars: V) => {
                 queryClient.cancelQueries(cacheKey)
                 const oldData = queryClient.getQueryData<D>(cacheKey, { exact: true })!
+                queryClient.setQueryData(cacheKey, config.optimisticFn(oldData, vars))
+                setError(null)
+
                 try {
-                    queryClient.setQueryData(cacheKey, optimisticFn(oldData, vars))
                     const result = await mutation.mutateAsync(vars)
                     return result
+
                 } catch (err) {
                     queryClient.setQueryData(cacheKey, oldData)
                     mounted.current && setError(err.message)
-                    if (opt?.rethrow) throw err
+                    throw err
+                    
                 } finally {
-                    if (!opt || !opt.skipInvalidate) queryClient.invalidateQueries(cacheKey)
+                    !config.opt?.skipInvalidate && queryClient.invalidateQueries(cacheKey)
                 }
             },
             dependencies

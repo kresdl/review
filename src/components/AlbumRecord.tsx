@@ -2,6 +2,7 @@ import React from 'react'
 import { Album } from 'types'
 import styled from '@emotion/styled'
 import { deleteAlbum } from 'lib/db'
+import { del } from 'lib/storage'
 import { useOptimistic } from 'lib/hooks'
 import { Link } from 'react-router-dom'
 
@@ -15,12 +16,21 @@ const Div = styled.div`
 `
 
 const AlbumRecord: React.FC<Album> = ({ title }) => {
+  const discard = async () => {
+    try {
+      const toDelete = await mutation.mutate(title)
+      await Promise.all(toDelete.map(del))
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const mutation = useOptimistic(
-    'albums',
-    () => deleteAlbum(title),
-    (old: Album[]) => old.filter(album => album.title !== title),
-    []
+    'albums', 
+    {
+      asyncFn: () => deleteAlbum(title),
+      optimisticFn: (old: Album[]) => old.filter(album => album.title !== title),
+    }, [],
   )
 
   return (
@@ -28,7 +38,7 @@ const AlbumRecord: React.FC<Album> = ({ title }) => {
       <Link to={`/user/album/${title}`}>
         <H2 className="mb-1">{title}</H2>
       </Link>
-      <button className="close ml-auto" onClick={mutation.mutate}>&times;</button>
+      <button className="close ml-auto" onClick={discard}>&times;</button>
     </Div>
   )
 }
