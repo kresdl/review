@@ -8,9 +8,3 @@ export const getUser = () => {
     if (!user) throw Error('Not logged in')
     return user
 }
-
-export const register = (email: string, password: string) =>
-    auth.createUserWithEmailAndPassword(email, password)
-
-export const signIn = (email: string, password: string) =>
-    auth.signInWithEmailAndPassword(email, password)

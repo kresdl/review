@@ -9,24 +9,26 @@ import { observer } from 'mobx-react-lite'
 
 const queryClient = new QueryClient()
 
-const App: React.FC = () => (
-  <QueryClientProvider client={queryClient}>
-    <Switch>
-      {
-        store.uid &&
-        <Route path="/user">
-          <User />
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Switch>
+        {
+          store.uid &&
+          <Route path="/user">
+            <User />
+          </Route>
+        }
+        <Route exact path={['/', '/register']}>
+          <Splash />
         </Route>
-      }
-      <Route exact path={['/', '/register']}>
-        <Splash />
-      </Route>
-      <Route path="*">
-        <Redirect to="/" />
-      </Route>
-    </Switch>
-    <ReactQueryDevtools />
-  </QueryClientProvider>
-)
+        <Route path="*">
+          <Redirect to="/" />
+        </Route>
+      </Switch>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  )
+}
 
 export default observer(App);

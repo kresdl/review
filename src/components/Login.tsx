@@ -2,7 +2,7 @@ import React from 'react'
 import Input from './Input'
 import { Link, useHistory } from 'react-router-dom'
 import store from 'lib/store'
-import { signIn } from 'lib/auth'
+import auth from 'lib/auth'
 
 const Login: React.FC = () => {
   const history = useHistory()
@@ -16,13 +16,13 @@ const Login: React.FC = () => {
     store.notify('Attempting to log in...')
 
     try {
-      const cred = await signIn(email, password)
+      const cred = await auth.signInWithEmailAndPassword(email, password)
       const uid = cred.user!.uid
       sessionStorage.setItem('uid', uid)
       store.setUser(uid)
       store.notify(null)
       history.push('/user/albums')
-      
+
     } catch (err) {
       store.notify(err)
     }

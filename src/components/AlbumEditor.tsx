@@ -7,7 +7,8 @@ import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 
 const AlbumEditor: React.FC = () => {
-  const albums = useAlbums(store.uid!)
+  useAlbums(store.uid)
+  const albums = store.albums
 
   return (
     <div className="row">

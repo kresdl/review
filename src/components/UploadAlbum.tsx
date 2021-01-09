@@ -13,13 +13,14 @@ const UploadAlbum: React.FC = () => {
     const { value: title } = em
 
     const old = store.albums
-
+/*
     store.setAlbums([...old, {
       id: title,
       title,
-      photos: []
+      photos: [],
+      dummy: true
     }])
-
+*/
     try {
       await addAlbum(title)
       form.reset()
@@ -33,7 +34,7 @@ const UploadAlbum: React.FC = () => {
 
   return (
     <form onSubmit={submit}>
-      <Input autoFocus={false} label="Title" required />
+      <Input autoComplete="off" autoFocus={false} label="Title" required />
       <button className="btn btn-primary" type="submit">Upload</button>
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>

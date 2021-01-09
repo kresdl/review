@@ -15,9 +15,11 @@ const Div = styled.div`
   margin-bottom: -1px
 `
 
-const AlbumRecord: React.FC<Album> = ({ title }) => {
+const AlbumRecord: React.FC<Album> = ({ title, dummy }) => {
 
   const discard = async () => {
+    if (dummy) return
+    
     const old = store.albums
     store.setAlbums(old.filter(album => album.title !== title))
 

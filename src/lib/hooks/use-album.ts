@@ -1,22 +1,19 @@
-import { getAlbum, onAlbumEdit } from "lib/db"
+import { onAlbumEdit } from "lib/db"
 import { get } from "lib/storage"
 import store from "lib/store"
 import { useEffect } from "react"
 import { Album, Photo } from "types"
 
-const expand = async (album: Album): Promise<Album<Photo>> => ({
+const expand = async (album: Album, uid?: string): Promise<Album<Photo>> => ({
     ...album,
-    photos: await Promise.all(album.photos.map(get))
+    photos: await Promise.all(album.photos.map(photo => get(photo, uid)))
 })
 
-const useAlbum = (uid: string, albumTitle: string) => {
+const useAlbum = (albumTitle?: string, uid?: string | null) => {
     useEffect(() => {
+        if (!uid || !albumTitle) return
 
-        getAlbum(albumTitle).then(
-            async album => store.setAlbum(await expand(album))
-        ).catch(store.notify)
-
-        const unsubscribe = onAlbumEdit(uid, albumTitle, 
+        const unsubscribe = onAlbumEdit(albumTitle, uid, 
             async album => {
                 try {
                     store.setAlbum(await expand(album))
@@ -29,8 +26,6 @@ const useAlbum = (uid: string, albumTitle: string) => {
 
         return () => void unsubscribe()
     }, [])
-
-    return store.album
 }
 
 export default useAlbum

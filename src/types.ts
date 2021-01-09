@@ -13,7 +13,8 @@ export type Indexed = {
 }
 
 export type Album<T = string> = Titled & Indexed & {
-  photos: T[]
+  photos: T[],
+  dummy?: boolean
 }
 
 export type User = {
@@ -26,8 +27,11 @@ export type User = {
 export type Photo = {
   url: string
   name: string
+  dummy?: boolean
 }
 
 export type Stat = {
   count: number
 }
+
+export type Index = Record<string, Photo[]>

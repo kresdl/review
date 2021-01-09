@@ -2,8 +2,6 @@ import firebase from 'firebase/app'
 import { Album } from 'types'
 import { getUser } from './auth'
 import _ from 'lodash'
-import { useEffect, useState } from 'react'
-import tap from 'tap'
 
 const db = firebase.firestore()
 
@@ -26,23 +24,6 @@ export const addAlbum = (title: string) =>
         .collection('albums')
         .doc(title)
         .set({ title, photos: [] })
-
-export const getAlbums = async () => {
-    const snapshot = await getUserRef()
-        .collection('albums')
-        .get()
-
-    return tap(snapshot.docs.map(toIndexed)) as Album[];
-}
-
-export const getAlbum = async (title: string) => {
-    const snapshot = await getUserRef()
-        .collection('albums')
-        .doc(title)
-        .get()
-
-    return snapshot.data() as Album
-}
 
 export const addPhotoToAlbum = async (albumTitle: string, photo: string) =>
     db.runTransaction(async transaction => {
@@ -125,7 +106,7 @@ export const deleteAlbum = async (title: string) => {
     return toDelete
 }
 
-export const onAlbumSplice = (uid: string, callback: (albums: Album[]) => void, error: (err: Error) => void) => 
+export const onAlbumSplice = (uid: string, callback: (albums: Album[]) => void, error?: (err: Error) => void) => 
     getUserRef(uid)
         .collection('albums')
         .onSnapshot(
@@ -136,7 +117,7 @@ export const onAlbumSplice = (uid: string, callback: (albums: Album[]) => void, 
             error
         )
 
-export const onAlbumEdit = (uid: string, album: string, callback: (albums: Album) => void, error: (err: Error) => void) =>
+export const onAlbumEdit = (album: string, uid: string, callback: (albums: Album) => void, error?: (err: Error) => void) =>
     getUserRef(uid)
         .collection('albums')
         .doc(album)

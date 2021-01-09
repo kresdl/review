@@ -5,29 +5,26 @@ import { useUploadManager } from 'lib/hooks'
 import { addPhotoToAlbum } from 'lib/db'
 import { put } from 'lib/storage'
 import store from 'lib/store'
-import { Photo } from 'types'
+import { toPhotoRepresentation } from 'lib/util'
+import Progress from './Progress'
 
 type Params = {
     album: string
 }
 
-const toPhoto = (file: File): Photo => ({
-    url: URL.createObjectURL(file),
-    name: file?.name
-})
-
 const UploadPhotos: React.FC = () => {
     const { album } = useRouteMatch<Params>('/user/album/:album')!.params
     const manager = useUploadManager()
 
-    const select = async (files: File[]) => {
-        const old = store.album!
-
+    const upload = async (files: File[]) => {
+        if (!store.album) return
+        const old = store.album
+/*
         store.setAlbum({
             ...old,
-            photos: [...old.photos, ...files.map(toPhoto)]
+            photos: [...old.photos, ...files.map(toPhotoRepresentation)],
         })
-
+*/
         try {
             await Promise.all(
                 files.map(
@@ -44,9 +41,13 @@ const UploadPhotos: React.FC = () => {
         }
     }
 
+    const loading = typeof manager.progress === 'number'
+    console.log(manager.progress)
+
     return (
         <div className="form-group">
-            <FileInput multiple required onPick={select} mr="0.5rem" label="Upload photo" />
+            <FileInput multiple required onPick={upload} mr="0.5rem" label="Upload photo" />
+            {loading && <Progress value={manager.progress!} />}
             {store.message && <span className="text-danger">{store.message}</span>}
         </div>
     )
