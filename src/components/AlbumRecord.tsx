@@ -3,8 +3,8 @@ import { Album } from 'types'
 import styled from '@emotion/styled'
 import { deleteAlbum } from 'lib/db'
 import { del } from 'lib/storage'
-import { useOptimistic } from 'lib/hooks'
 import { Link } from 'react-router-dom'
+import store from 'lib/store'
 
 const H2 = styled.h2`
   font-size: 1.2rem;
@@ -16,22 +16,20 @@ const Div = styled.div`
 `
 
 const AlbumRecord: React.FC<Album> = ({ title }) => {
+
   const discard = async () => {
+    const old = store.albums
+    store.setAlbums(old.filter(album => album.title !== title))
+
     try {
-      const toDelete = await mutation.mutate(title)
+      const toDelete = await deleteAlbum(title)
       await Promise.all(toDelete.map(del))
+
     } catch (err) {
-      console.log(err)
+      store.setAlbums(old)
+      store.notify(err)
     }
   }
-
-  const mutation = useOptimistic(
-    'albums', 
-    {
-      asyncFn: () => deleteAlbum(title),
-      optimisticFn: (old: Album[]) => old.filter(album => album.title !== title),
-    }, [],
-  )
 
   return (
     <Div className="d-flex align-items-center p-3 border rounded">

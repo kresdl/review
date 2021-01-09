@@ -1,18 +1,29 @@
 import React, { useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import styled from '@emotion/styled'
 import auth from 'lib/auth'
+import store from 'lib/store'
 
 const Nav = styled.nav`
   background-color: rgb(24, 24, 28);
 `
 
 const Sidebar: React.FC = () => {
+  const history = useHistory()
   const location = useLocation()
   const logout = location.pathname === '/user/logout'
 
   useEffect(
-    () => () => void auth.signOut(), [logout]
+    () => () => {
+      auth.signOut()
+        .then(() => {
+          sessionStorage.removeItem('uid')
+          store.setUser(null)
+          store.notify(null)
+          history.push('/')
+        })
+        .catch(store.notify)
+    }, [logout]
   )
 
   return (

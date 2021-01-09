@@ -12,8 +12,8 @@ export type Indexed = {
   id: string
 }
 
-export type Album = Titled & Indexed & {
-  photos: string[]
+export type Album<T = string> = Titled & Indexed & {
+  photos: T[]
 }
 
 export type User = {

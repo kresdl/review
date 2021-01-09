@@ -40,7 +40,9 @@ const useOptimistic = <D, T, V>(
                     throw err
                     
                 } finally {
-                    !config.opt?.skipInvalidate && queryClient.invalidateQueries(cacheKey)
+                    setTimeout(() => {
+                        !config.opt?.skipInvalidate && queryClient.invalidateQueries(cacheKey)
+                    }, 1000)
                 }
             },
             dependencies

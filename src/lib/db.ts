@@ -2,6 +2,8 @@ import firebase from 'firebase/app'
 import { Album } from 'types'
 import { getUser } from './auth'
 import _ from 'lodash'
+import { useEffect, useState } from 'react'
+import tap from 'tap'
 
 const db = firebase.firestore()
 
@@ -10,8 +12,9 @@ type Snapshot = firebase.firestore.QueryDocumentSnapshot<firebase.firestore.Docu
 const toIndexed = (snapshot: Snapshot) =>
     ({ id: snapshot.id, ...snapshot.data() })
 
-const getUserRef = () =>
-    db.collection('users').doc(getUser().uid)
+const getUserRef = (uid?: string) =>
+    db.collection('users').doc(uid || getUser().uid)
+
 
 export const addUser = (id: string, name: string, lastName: string, email: string) =>
     db.collection('users')
@@ -29,7 +32,7 @@ export const getAlbums = async () => {
         .collection('albums')
         .get()
 
-    return snapshot.docs.map(toIndexed) as Album[];
+    return tap(snapshot.docs.map(toIndexed)) as Album[];
 }
 
 export const getAlbum = async (title: string) => {
@@ -121,3 +124,26 @@ export const deleteAlbum = async (title: string) => {
     await batch.commit()    
     return toDelete
 }
+
+export const onAlbumSplice = (uid: string, callback: (albums: Album[]) => void, error: (err: Error) => void) => 
+    getUserRef(uid)
+        .collection('albums')
+        .onSnapshot(
+            snapshot => {
+                const data = snapshot.docs.map(doc => doc.data() as Album)
+                callback(data)
+            },
+            error
+        )
+
+export const onAlbumEdit = (uid: string, album: string, callback: (albums: Album) => void, error: (err: Error) => void) =>
+    getUserRef(uid)
+        .collection('albums')
+        .doc(album)
+        .onSnapshot(
+            snapshot => {
+                const data = snapshot.data() as Album
+                callback(data)
+            },
+            error
+        )

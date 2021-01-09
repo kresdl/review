@@ -1,21 +1,9 @@
 import React from 'react'
 import Input from './Input'
 import { addAlbum } from 'lib/db'
-import { useOptimistic } from 'lib/hooks'
-import { Album } from 'types'
+import store from 'lib/store'
 
 const UploadAlbum: React.FC = () => {
-  const mutation = useOptimistic(
-    'albums', 
-    {
-      asyncFn: (title: string) => addAlbum(title),
-      optimisticFn: (old: Album[], title: string) => [...old, {
-        id: title,
-        title,
-        photos: []
-      }]
-    }, []
-  )
 
   const submit: React.FormEventHandler<HTMLFormElement> = async e => {
     e.preventDefault()
@@ -24,18 +12,30 @@ const UploadAlbum: React.FC = () => {
     const em = form.elements.namedItem('title') as HTMLInputElement
     const { value: title } = em
 
+    const old = store.albums
+
+    store.setAlbums([...old, {
+      id: title,
+      title,
+      photos: []
+    }])
+
     try {
-      await mutation.mutate(title)
+      await addAlbum(title)
       form.reset()
       em.focus()
-    } catch { }
+
+    } catch (err) {
+      store.setAlbums(old)
+      store.notify(err)
+    }
   }
 
   return (
     <form onSubmit={submit}>
       <Input autoFocus={false} label="Title" required />
       <button className="btn btn-primary" type="submit">Upload</button>
-      {mutation.error && <span className="text-danger">{mutation.error}</span>}
+      {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )
 }

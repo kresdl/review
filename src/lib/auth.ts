@@ -12,5 +12,5 @@ export const getUser = () => {
 export const register = (email: string, password: string) =>
     auth.createUserWithEmailAndPassword(email, password)
 
-export const signIn = (email: string, password: string) => 
+export const signIn = (email: string, password: string) =>
     auth.signInWithEmailAndPassword(email, password)

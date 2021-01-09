@@ -1,13 +1,12 @@
 import React from 'react'
-import { useQuery } from 'react-query'
 import UploadPhotos from './UploadPhotos'
 import { useRouteMatch } from 'react-router-dom'
-import { del, get } from 'lib/storage'
-import { getAlbum, removePhotoFromAlbum } from 'lib/db'
+import { del } from 'lib/storage'
+import { removePhotoFromAlbum } from 'lib/db'
 import Thumbnail from './Thumbnail'
 import { Transition, TransitionGroup } from 'react-transition-group'
-import { Photo } from 'types'
-import { useOptimistic } from 'lib/hooks'
+import useAlbum from 'lib/hooks/use-album'
+import store from 'lib/store'
 
 const TRANSITION_DUR = 250
 
@@ -24,36 +23,26 @@ type Params = {
 }
 
 const Album: React.FC = () => {
-  const { album } = useRouteMatch<Params>('/user/album/:album')!.params
+  const { album: title } = useRouteMatch<Params>('/user/album/:album')!.params
+  const album = useAlbum(store.uid!, title)
 
-  const discard = async (name: string) => {
+  const deletePhoto = async (name: string) => {
+    const old = store.album!
+
+    store.setAlbum({
+      ...old,
+      photos: old.photos.filter(photo => photo.name !== name)
+    })
+
     try {
-      const count = await mutation.mutate(name)
-      console.log(count)
+      const count = await removePhotoFromAlbum(title, name)
       if (!count) await del(name)
+
     } catch (err) {
-      console.log(err)
+        store.setAlbum(old)
+        store.notify(err)
     }
   }
-
-  const mutation = useOptimistic(
-    ['albums', album], 
-    {
-      asyncFn: async (photo: string) =>
-        removePhotoFromAlbum(album, photo),
-
-      optimisticFn: (old: Photo[], name: string) =>
-        old.filter(photo => photo.name !== name)
-    }, []
-  )
-
-  const photos = useQuery<Photo[], Error>(
-    ['albums', album], 
-    async () => {
-      const { photos } = await getAlbum(album)
-      return Promise.all(photos.map(get))
-    }
-  )
 
   return (
     <>
@@ -61,17 +50,17 @@ const Album: React.FC = () => {
       <div className="d-flex flex-wrap">
         <TransitionGroup>
           {
-            photos.data?.map(({ name, url }) => (
+            album?.photos.map(({ name, url }) => (
               <Transition key={name} timeout={TRANSITION_DUR}>
                 {
-                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => discard(name)} />
+                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => deletePhoto(name)} />
                 }
               </Transition>
             ))
           }
         </TransitionGroup>
       </div>
-      {photos.error && <p className="danger">{photos.error.message}</p>}
+      {store.message && <p className="danger">{store.message}</p>}
     </>
   )
 }

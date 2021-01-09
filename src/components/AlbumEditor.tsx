@@ -2,12 +2,12 @@ import React from 'react'
 import UploadAlbum from './UploadAlbum'
 import Albums from './Albums'
 import { byTitle } from 'lib/util'
-import { useQuery } from 'react-query'
-import { getAlbums } from 'lib/db'
-import { Album } from 'types'
+import { useAlbums } from 'lib/hooks'
+import store from 'lib/store'
+import { observer } from 'mobx-react-lite'
 
 const AlbumEditor: React.FC = () => {
-  const albums = useQuery<Album[], Error>('albums', getAlbums)
+  const albums = useAlbums(store.uid!)
 
   return (
     <div className="row">
@@ -17,11 +17,11 @@ const AlbumEditor: React.FC = () => {
       </div>
       <div className="col-lg-6 pt-5 pt-lg-0">
         <h5 className="mb-4">Albums</h5>
-        <Albums items={albums.data?.sort(byTitle)} />
-        {albums.error && <p className="text-danger">{albums.error.message}</p>}
+        <Albums items={[...albums].sort(byTitle)} />
+        {store.message && <p className="text-danger">{store.message}</p>}
       </div>
     </div>  
   )
 }
 
-export default AlbumEditor
+export default observer(AlbumEditor)
