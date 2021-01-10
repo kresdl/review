@@ -5,12 +5,7 @@ import _ from 'lodash'
 
 const db = firebase.firestore()
 
-type Snapshot = firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
-
-const toIndexed = (snapshot: Snapshot) =>
-    ({ id: snapshot.id, ...snapshot.data() })
-
-const getUserRef = (uid?: string) =>
+export const getUserRef = (uid?: string) =>
     db.collection('users').doc(uid || getUser().uid)
 
 
@@ -19,7 +14,7 @@ export const addUser = (id: string, name: string, lastName: string, email: strin
         .doc(id)
         .set({ name, lastName, email })
 
-export const addAlbum = (title: string) =>
+export const addAlbum = (title: string) => 
     getUserRef()
         .collection('albums')
         .doc(title)
@@ -105,26 +100,3 @@ export const deleteAlbum = async (title: string) => {
     await batch.commit()    
     return toDelete
 }
-
-export const onAlbumSplice = (uid: string, callback: (albums: Album[]) => void, error?: (err: Error) => void) => 
-    getUserRef(uid)
-        .collection('albums')
-        .onSnapshot(
-            snapshot => {
-                const data = snapshot.docs.map(doc => doc.data() as Album)
-                callback(data)
-            },
-            error
-        )
-
-export const onAlbumEdit = (album: string, uid: string, callback: (albums: Album) => void, error?: (err: Error) => void) =>
-    getUserRef(uid)
-        .collection('albums')
-        .doc(album)
-        .onSnapshot(
-            snapshot => {
-                const data = snapshot.data() as Album
-                callback(data)
-            },
-            error
-        )

@@ -5,7 +5,7 @@ import { Photo } from 'types'
 export const get = async (name: string, uid?: string | null): Promise<Photo> => {
     const ref = firebase.storage()
         .ref()
-        .child(uid || getUser().uid + '/' + name)
+        .child((uid || getUser().uid) + '/' + name)
 
     return { 
         name: ref.name, 

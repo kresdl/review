@@ -1,8 +1,19 @@
-import { action, observable, makeObservable } from 'mobx';
+import { action, observable, makeObservable, computed } from 'mobx';
 import { Album, Photo } from 'types';
 class Store {
     constructor() {
         makeObservable(this)
+    }
+
+    @observable
+    busy?: boolean
+
+    @observable
+    progress?: number | null
+
+    @computed
+    get uploading() {
+        return typeof this.progress === 'number'
     }
 
     @observable
@@ -18,12 +29,22 @@ class Store {
     message?: string | null
 
     @action
+    setBusy = (value: boolean) => {
+        this.busy = value
+    }
+
+    @action
+    setProgress = (value: number | null) => {
+        this.progress = value
+    }
+
+    @action
     setAlbums = (albums: Album[]) => {
         this.albums = albums
     }
 
     @action
-    setAlbum = (album: Album<Photo>) => {
+    setAlbum = (album?: Album<Photo>) => {
         this.album = album
     }
 

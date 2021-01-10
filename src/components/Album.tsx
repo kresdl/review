@@ -1,15 +1,13 @@
 import React, { CSSProperties } from 'react'
 import UploadPhotos from './UploadPhotos'
 import { useRouteMatch } from 'react-router-dom'
-import { del } from 'lib/storage'
-import { removePhotoFromAlbum } from 'lib/db'
 import Thumbnail from './Thumbnail'
 import { Transition, TransitionGroup } from 'react-transition-group'
-import useAlbum from 'lib/hooks/use-album'
+import { useAlbum } from 'lib/editor/hooks'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 import { TransitionStatus } from 'react-transition-group/Transition'
-import Progress from './Progress'
+import { discardPhoto } from 'lib/editor/tools'
 
 const TRANSITION_DUR = 250
 
@@ -35,38 +33,20 @@ type Params = {
 }
 
 const Album: React.FC = () => {
-  const { album: title } = useRouteMatch<Params>('/user/album/:album')!.params
-  useAlbum(title, store.uid)
-  const album = store.album
+  const { album } = useRouteMatch<Params>('/user/album/:album')!.params
 
-  if (!album) return null
-
-  const deletePhoto = async (name: string) => {
-    store.setAlbum({
-      ...album,
-      photos: album.photos.filter(photo => photo.name !== name)
-    })
-
-    try {
-      const count = await removePhotoFromAlbum(title, name)
-      if (!count) await del(name)
-
-    } catch (err) {
-        store.setAlbum(album)
-        store.notify(err)
-    }
-  }
-
+  useAlbum(album)
+  
   return (
     <>
       <UploadPhotos />
       <div className="d-flex flex-wrap">
         <TransitionGroup>
           {
-            album?.photos.map(({ name, url, dummy }) => (
+            store.album?.photos.map(({ name, url }) => (
               <Transition key={name} timeout={TRANSITION_DUR}>
                 {
-                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => !dummy && deletePhoto(name)} />
+                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => discardPhoto(name, album)} />
                 }
               </Transition>
             ))

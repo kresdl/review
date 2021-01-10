@@ -1,56 +1,38 @@
 import React from 'react'
 import { useRouteMatch } from 'react-router-dom'
 import FileInput from './FileInput'
-import { useUploadManager } from 'lib/hooks'
-import { addPhotoToAlbum } from 'lib/db'
-import { put } from 'lib/storage'
 import store from 'lib/store'
-import { toPhotoRepresentation } from 'lib/util'
 import Progress from './Progress'
+import styled from '@emotion/styled'
+import { observer } from 'mobx-react-lite'
+import { useUpload } from 'lib/editor/hooks'
 
 type Params = {
     album: string
 }
 
+const Div = styled.div`
+    height: 3rem;
+    display: flex;
+    align-items: center;
+`
+
 const UploadPhotos: React.FC = () => {
     const { album } = useRouteMatch<Params>('/user/album/:album')!.params
-    const manager = useUploadManager()
-
-    const upload = async (files: File[]) => {
-        if (!store.album) return
-        const old = store.album
-/*
-        store.setAlbum({
-            ...old,
-            photos: [...old.photos, ...files.map(toPhotoRepresentation)],
-        })
-*/
-        try {
-            await Promise.all(
-                files.map(
-                    file => manager.upload(put(file))
-                )
-            )
-
-            await Promise.all(
-                files.map(file => addPhotoToAlbum(album, file.name))
-            )
-        } catch (err) {
-            store.setAlbum(old)
-            store.notify(err)
-        }
-    }
-
-    const loading = typeof manager.progress === 'number'
-    console.log(manager.progress)
+    const upload = useUpload()
+    console.log(store.busy, store.uploading, store.progress)
 
     return (
         <div className="form-group">
-            <FileInput multiple required onPick={upload} mr="0.5rem" label="Upload photo" />
-            {loading && <Progress value={manager.progress!} />}
+            <Div>
+                {store.busy
+                    ? store.uploading && <Progress className="flex-grow-1" value={store.progress!} />
+                    : <FileInput multiple required onPick={files => upload(files, album)} mr="0.5rem" label="Upload photo" />
+                }
+            </Div>
             {store.message && <span className="text-danger">{store.message}</span>}
         </div>
     )
 }
 
-export default UploadPhotos
+export default observer(UploadPhotos)
