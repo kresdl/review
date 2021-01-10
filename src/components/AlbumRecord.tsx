@@ -14,7 +14,11 @@ const Div = styled.div`
   margin-bottom: -1px
 `
 
-const AlbumRecord: React.FC<Album> = ({ title }) => (
+type Props = {
+  title: string
+}
+
+const AlbumRecord: React.FC<Props> = ({ title }) => (
   <Div className="d-flex align-items-center p-3 border rounded">
     <Link to={`/user/album/${title}`}>
       <H2 className="mb-1">{title}</H2>

@@ -19,7 +19,6 @@ const Login: React.FC = () => {
       const cred = await auth.signInWithEmailAndPassword(email, password)
       const uid = cred.user!.uid
       sessionStorage.setItem('uid', uid)
-      store.setUser(uid)
       store.notify(null)
       history.push('/user/albums')
 

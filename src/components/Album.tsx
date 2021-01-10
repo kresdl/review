@@ -14,7 +14,8 @@ const TRANSITION_DUR = 250
 const states: Partial<Record<TransitionStatus, CSSProperties>> = {
   entering: {
     opacity: 1,
-    transform: 'scale(0)' 
+    transform: 'scale(0)',
+    pointerEvents: 'none'
   },
   entered: { 
     transform: 'scale(1)', 
@@ -24,7 +25,8 @@ const states: Partial<Record<TransitionStatus, CSSProperties>> = {
   },
   exiting: { 
     opacity: 0, 
-    transition: `opacity ${TRANSITION_DUR}ms` 
+    transition: `opacity ${TRANSITION_DUR}ms`,
+    pointerEvents: 'none'
   }
 }
 

@@ -20,13 +20,12 @@ const Div = styled.div`
 const UploadPhotos: React.FC = () => {
     const { album } = useRouteMatch<Params>('/user/album/:album')!.params
     const upload = useUpload()
-    console.log(store.busy, store.uploading, store.progress)
 
     return (
         <div className="form-group">
             <Div>
-                {store.busy
-                    ? store.uploading && <Progress className="flex-grow-1" value={store.progress!} />
+                {store.uploading
+                    ? <Progress className="flex-grow-1" value={store.progress!} />
                     : <FileInput multiple required onPick={files => upload(files, album)} mr="0.5rem" label="Upload photo" />
                 }
             </Div>

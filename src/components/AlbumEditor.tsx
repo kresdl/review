@@ -1,13 +1,11 @@
 import React from 'react'
 import UploadAlbum from './UploadAlbum'
 import Albums from './Albums'
-import { byTitle } from 'lib/util'
-import { useAlbums } from 'lib/editor/hooks'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 
 const AlbumEditor: React.FC = () => {
-  useAlbums()
+  const albums = Object.keys(store.index)
 
   return (
     <div className="row">
@@ -17,7 +15,7 @@ const AlbumEditor: React.FC = () => {
       </div>
       <div className="col-lg-6 pt-5 pt-lg-0">
         <h5 className="mb-4">Albums</h5>
-        <Albums items={[...store.albums].sort(byTitle)} />
+        <Albums items={albums.sort()} />
         {store.message && <p className="text-danger">{store.message}</p>}
       </div>
     </div>  

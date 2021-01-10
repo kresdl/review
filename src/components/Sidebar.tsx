@@ -18,7 +18,6 @@ const Sidebar: React.FC = () => {
       auth.signOut()
         .then(() => {
           sessionStorage.removeItem('uid')
-          store.setUser(null)
           store.notify(null)
           history.push('/')
         })

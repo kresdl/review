@@ -34,11 +34,8 @@ const useUpload = () => {
     const upload = useManager()
 
     return async (files: File[], album: string) => {
-        if (store.busy) return
-
         try {
             for (let file of files) {
-                store.setBusy(true)
                 await upload(put(file))
                 addPhotoToAlbum(album, file.name)
             }

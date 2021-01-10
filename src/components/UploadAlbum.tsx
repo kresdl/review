@@ -2,7 +2,7 @@ import React from 'react'
 import Input from './Input'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
-import { createAlbum } from 'lib/editor/tools'
+import { addAlbum } from 'lib/db'
 
 const UploadAlbum: React.FC = () => {
 
@@ -13,7 +13,7 @@ const UploadAlbum: React.FC = () => {
     const em = form.elements.namedItem('title') as HTMLInputElement
     const { value: title } = em
 
-    createAlbum(title)
+    addAlbum(title)
     form.reset()
     em.focus()
   }
@@ -21,7 +21,7 @@ const UploadAlbum: React.FC = () => {
   return (
     <form onSubmit={submit}>
       <Input autoComplete="off" autoFocus={false} label="Title" required />
-      <button className="btn btn-primary" disabled={store.busy}type="submit">Upload</button>
+      <button className="btn btn-primary" disabled={store.uploading} type="submit">Upload</button>
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )
