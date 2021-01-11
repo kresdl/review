@@ -4,24 +4,22 @@ import { put } from "lib/storage"
 import store from "lib/store"
 import { useCallback } from 'react'
 
-const useManager = () => 
+const useManager = () =>
     useCallback(
-        (task : firebase.storage.UploadTask) => new Promise<void>((resolve, reject) => {
+        (task: firebase.storage.UploadTask, current: number, total: number) => new Promise<void>((resolve, reject) => {
             const unsubscribe = task.on(
                 firebase.storage.TaskEvent.STATE_CHANGED,
 
                 snapshot => {
-                    store.setProgress(snapshot.bytesTransferred / snapshot.totalBytes)
+                    store.setProgress(current / total + (snapshot.bytesTransferred / snapshot.totalBytes) / total)
                 },
 
                 error => {
-                    store.setProgress(null)
                     unsubscribe()
                     reject(error)
                 },
 
                 () => {
-                    store.setProgress(null)
                     unsubscribe()
                     resolve()
                 }
@@ -34,14 +32,20 @@ const useUpload = () => {
     const upload = useManager()
 
     return async (files: File[], album: string) => {
+        store.op = { type: 'upload' }
+        store.setProgress(0)
+        let i = 0
+
         try {
             for (let file of files) {
-                await upload(put(file))
-                addPhotoToAlbum(album, file.name)
+                await upload(put(file), i++, files.length)
+                await addPhotoToAlbum(file.name, album)
             }
+            store.setProgress(1)
+            setTimeout(() => store.setProgress(null), 500)
         } catch (err) {
-            store.notify(err)
-            throw err
+            console.log(err)
+            store.setProgress(null)
         }
     }
 }

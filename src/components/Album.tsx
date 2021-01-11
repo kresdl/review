@@ -35,20 +35,19 @@ type Params = {
 }
 
 const Album: React.FC = () => {
-  const { album } = useRouteMatch<Params>('/user/album/:album')!.params
+  const { album: albumTitle } = useRouteMatch<Params>('/user/album/:album')!.params
+  const album = useAlbum(albumTitle)
 
-  useAlbum(album)
-  
   return (
     <>
       <UploadPhotos />
       <div className="d-flex flex-wrap">
         <TransitionGroup>
           {
-            store.album?.photos.map(({ name, url }) => (
+            album?.photos.map(({ name, url }) => (
               <Transition key={name} timeout={TRANSITION_DUR}>
                 {
-                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => discardPhoto(name, album)} />
+                  state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => discardPhoto(name, albumTitle)} />
                 }
               </Transition>
             ))

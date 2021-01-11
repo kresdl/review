@@ -13,15 +13,17 @@ const UploadAlbum: React.FC = () => {
     const em = form.elements.namedItem('title') as HTMLInputElement
     const { value: title } = em
 
-    addAlbum(title)
-    form.reset()
-    em.focus()
+    try {
+      addAlbum(title)
+      form.reset()
+      em.focus()
+    } catch {}
   }
 
   return (
     <form onSubmit={submit}>
       <Input autoComplete="off" autoFocus={false} label="Title" required />
-      <button className="btn btn-primary" disabled={store.uploading} type="submit">Upload</button>
+      <button className="btn btn-primary" disabled={store.busy} type="submit">Upload</button>
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )

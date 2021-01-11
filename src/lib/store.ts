@@ -1,8 +1,12 @@
 import { action, observable, makeObservable, computed } from 'mobx';
-import { Album, Index, Photo } from 'types';
+import { Album, Index } from 'types';
 import auth from './auth';
 import { getUserRef } from './db';
-import { inflate } from './util';
+
+type Op = {
+    type: 'upload' | 'delete-album' | 'delete-photo' | 'create-album'
+    data?: string
+}
 class Store {
     constructor() {
         makeObservable(this)
@@ -11,7 +15,7 @@ class Store {
             this.uid = user?.uid
 
             this.firestoreUnsubscribe && this.firestoreUnsubscribe()
-            if (!this.uid) return
+            if (!this.uid) return this.setIndex(null)
     
             this.firestoreUnsubscribe = getUserRef(this.uid)
                 .collection('albums')
@@ -22,33 +26,31 @@ class Store {
                             (acc, e) => ({ ...acc, [e.title]: e.photos }), {}
                         )
                         this.setIndex(index)
-
-                        if (this.album)
-                            this.setAlbum(await inflate(this.album?.title, index[this.album?.title]))
                     },
-                    this.notify
+                    console.log
                 )
             })
     }
 
     firestoreUnsubscribe?: () => void | null
 
+    urls: Record<string, string> = {}
+
     @observable
     progress?: number | null
 
+    op?: Op
+
     @computed
-    get uploading() {
+    get busy() {
         return typeof this.progress === 'number'
     }
 
     @observable
-    index: Index = {}
+    index?: Index | null
 
     @observable
-    album?: Album<Photo>
-
-    @observable
-    uid?: string | null = sessionStorage.getItem('uid')
+    uid? = sessionStorage.getItem('uid')
  
     @observable
     message?: string | null
@@ -59,13 +61,8 @@ class Store {
     }
 
     @action
-    setIndex = async (index: Index) => {
+    setIndex = async (index: Index | null) => {
         this.index = index
-    }
-
-    @action
-    setAlbum = (album?: Album<Photo>) => {
-        this.album = album
     }
 
     @action

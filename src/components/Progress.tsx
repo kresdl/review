@@ -13,7 +13,7 @@ const ProgressBar: React.FC<Props & Stylable> = ({ value, className }) => {
 
     return (
         <div className={'form-group progress my-0 ' + className}>
-          <div className="progress-bar progress-bar-striped progress-bar-animated bg-success bg-info" role="progressbar" style={style} aria-valuenow={prog} aria-valuemin={0} aria-valuemax={100} />
+          <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style={style} aria-valuenow={prog} aria-valuemin={0} aria-valuemax={100} />
         </div>
     )
 }

@@ -24,10 +24,8 @@ const UploadPhotos: React.FC = () => {
     return (
         <div className="form-group">
             <Div>
-                {store.uploading
-                    ? <Progress className="flex-grow-1" value={store.progress!} />
-                    : <FileInput multiple required onPick={files => upload(files, album)} mr="0.5rem" label="Upload photo" />
-                }
+                <FileInput multiple required onPick={files => upload(files, album)} mr="0.5rem" label="Upload photo" />
+                {store.busy && <Progress className="flex-grow-1" value={store.progress!} />}
             </Div>
             {store.message && <span className="text-danger">{store.message}</span>}
         </div>

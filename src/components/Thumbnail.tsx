@@ -8,6 +8,7 @@ const Thumbnail = styled.div<{ url: string } & SpaceProps>`
     background-repeat: no-repeat;
     background-color: black;
     background-position: center;
+    box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.25), 0 2px 8px 0 rgba(0, 0, 0, 0.25);
     width: 120px;
     height: 120px;
     flex-shrink: 0;

@@ -5,7 +5,7 @@ import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 
 const AlbumEditor: React.FC = () => {
-  const albums = Object.keys(store.index)
+  const albums = store.index && Object.keys(store.index)
 
   return (
     <div className="row">
@@ -15,7 +15,7 @@ const AlbumEditor: React.FC = () => {
       </div>
       <div className="col-lg-6 pt-5 pt-lg-0">
         <h5 className="mb-4">Albums</h5>
-        <Albums items={albums.sort()} />
+        <Albums items={albums?.sort()} />
         {store.message && <p className="text-danger">{store.message}</p>}
       </div>
     </div>  

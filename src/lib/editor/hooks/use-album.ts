@@ -1,15 +1,22 @@
+import { useMounted } from "lib/hooks"
 import store from "lib/store"
 import { inflate } from "lib/util"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { Album, Photo } from "types"
 
-const useAlbum = (album?: string) => {
+const useAlbum = (title: string) => {
+    const [album, setAlbum] = useState<Album<Photo> | undefined>()
+    const mounted = useMounted()
+
     useEffect(() => {
-        if (!album || !store.uid) return
+        if (!title || !store.index) return
+        inflate(title, store.index[title])
+            .then(album => {
+                mounted.current && setAlbum(album)
+            })
+    }, [store.index, title])
 
-        inflate(album, store.index[album])
-            .then(store.setAlbum)
-
-    }, [store.uid, album])
+    return album
 }
 
 export default useAlbum

@@ -1,7 +1,7 @@
 import firebase from 'firebase/app'
-import { Album, Stat } from 'types'
+import { Album } from 'types'
 import { getUser } from './auth'
-import _ from 'lodash'
+import { discardPhoto } from './editor/tools'
 
 const db = firebase.firestore()
 
@@ -20,7 +20,7 @@ export const addAlbum = (title: string) =>
         .doc(title)
         .set({ title, photos: [] })
 
-export const addPhotoToAlbum = async (albumTitle: string, photo: string) =>
+export const addPhotoToAlbum = async (photo: string, albumTitle: string) =>
     db.runTransaction(async transaction => {
         const userRef = getUserRef()
 
@@ -40,7 +40,7 @@ export const addPhotoToAlbum = async (albumTitle: string, photo: string) =>
         return count + 1
     })
 
-export const removePhotoFromAlbum = async (albumTitle: string, photo: string) =>
+export const removePhotoFromAlbum = async (photo: string, albumTitle: string) =>
     db.runTransaction(async transaction => {
         const userRef = getUserRef()
 
@@ -62,43 +62,17 @@ export const removePhotoFromAlbum = async (albumTitle: string, photo: string) =>
         return count - 1
     })
 
-type Rec = Record<string, number>
-
 export const deleteAlbum = async (title: string) => {
     const userRef = getUserRef()
     const albumRef = userRef.collection('albums').doc(title)
     const albumDoc = await albumRef.get()
     if (!albumDoc) throw Error('No album')
-    
+
     const { photos } = albumDoc.data() as Album
-    if (!photos.length) {
-        albumRef.delete()
-        return [] as string[]
+
+    for (let photo of photos) {
+        await discardPhoto(photo, title)
     }
     
-    const statRef = userRef.collection('stat')
-    const statDocs = await statRef
-        .where(firebase.firestore.FieldPath.documentId(), 'in', photos)
-        .get()
-
-    const stat = statDocs.docs.reduce<Rec>(
-        (acc, doc) => ({ ...acc, [doc.id]: doc.data().count - 1 }), {}
-    )
-
-    const toKeep = Object.keys(_.pickBy(stat, Boolean))
-    const toDelete = Object.keys(_.omitBy(stat, Boolean))
-
-    const batch = db.batch()
-
-    for (let photo of toKeep) {
-        batch.set(statRef.doc(photo), { count: stat[photo] })
-    }
-
-    for (let photo of toDelete) {
-        batch.delete(statRef.doc(photo))
-    }
-
-    batch.delete(albumRef)
-    await batch.commit()    
-    return toDelete
+    return albumRef.delete()
 }

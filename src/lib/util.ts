@@ -7,7 +7,10 @@ export const toPhotoRepresentation = (file: File): Photo => ({
     name: file?.name,
 })
 
-export const inflate = async (title: string, photos: string[]): Promise<Album<Photo>> => ({
-    title,
-    photos: await Promise.all(photos.map(photo => get(photo, store.uid)))
+export const inflate = async (album: string, photos: string[]): Promise<Album<Photo>> => ({
+    title: album,
+    photos: await Promise.all(photos.map(async photo => ({
+        name: photo, 
+        url: await get(photo, store.uid)
+    })))
 })
