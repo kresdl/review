@@ -10,7 +10,11 @@ const useAlbum = (title: string) => {
 
     useEffect(() => {
         if (!title || !store.index) return
-        inflate(title, store.index[title])
+
+        const photos = store.index[title]
+        if (!photos) return
+
+        inflate(title, photos)
             .then(album => {
                 mounted.current && setAlbum(album)
             })

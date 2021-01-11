@@ -14,6 +14,7 @@ const UploadAlbum: React.FC = () => {
     const { value: title } = em
 
     try {
+
       addAlbum(title)
       form.reset()
       em.focus()
@@ -23,7 +24,7 @@ const UploadAlbum: React.FC = () => {
   return (
     <form onSubmit={submit}>
       <Input autoComplete="off" autoFocus={false} label="Title" required />
-      <button className="btn btn-primary" disabled={store.busy} type="submit">Upload</button>
+      <button className="btn btn-primary" type="submit">Upload</button>
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )

@@ -34,7 +34,7 @@ const Login: React.FC = () => {
         <Input type="password" required name="password" label="Password" autoComplete="on" />
         <button className="btn btn-primary" type="submit">Login</button>
       </form>
-      <Link className="d-block form-group" to="/register">Register</Link>
+      <Link className="d-block form-group mt-2" to="/register">Register</Link>
     </>
   )
 }

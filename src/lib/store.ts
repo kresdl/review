@@ -1,22 +1,17 @@
-import { action, observable, makeObservable, computed } from 'mobx';
+import { action, observable, makeObservable } from 'mobx';
 import { Album, Index } from 'types';
 import auth from './auth';
 import { getUserRef } from './db';
-
-type Op = {
-    type: 'upload' | 'delete-album' | 'delete-photo' | 'create-album'
-    data?: string
-}
 class Store {
     constructor() {
         makeObservable(this)
 
         auth.onAuthStateChanged(user => {
-            this.uid = user?.uid
+            this.setUser(user?.uid)
 
             this.firestoreUnsubscribe && this.firestoreUnsubscribe()
             if (!this.uid) return this.setIndex(null)
-    
+
             this.firestoreUnsubscribe = getUserRef(this.uid)
                 .collection('albums')
                 .onSnapshot(
@@ -29,35 +24,36 @@ class Store {
                     },
                     console.log
                 )
-            })
+        })
     }
 
     firestoreUnsubscribe?: () => void | null
 
-    urls: Record<string, string> = {}
-
     @observable
-    progress?: number | null
-
-    op?: Op
-
-    @computed
-    get busy() {
-        return typeof this.progress === 'number'
-    }
+    tasks: Record<string, number | null> = {}
 
     @observable
     index?: Index | null
 
     @observable
-    uid? = sessionStorage.getItem('uid')
- 
+    uid?= sessionStorage.getItem('uid')
+
     @observable
     message?: string | null
 
+    getTaskControls = (album: string) =>
+        action(
+            (value: number | null) => {
+                this.tasks = {
+                    ...this.tasks,
+                    [album]: value
+                }
+            }
+        )
+
     @action
-    setProgress = (value: number | null) => {
-        this.progress = value
+    setUser = (uid?: string | null) => {
+        this.uid = uid
     }
 
     @action
