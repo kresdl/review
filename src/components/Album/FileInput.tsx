@@ -1,7 +1,11 @@
 import React from "react";
 import { Extend } from "types";
-import { space, SpaceProps } from 'styled-system'
-import styled from '@emotion/styled'
+import uploadSvg from 'images/cloud.svg'
+import styled from "@emotion/styled";
+
+const Label = styled.label`
+    cursor: pointer;
+`
 
 type Props = {
     label: string
@@ -19,11 +23,11 @@ const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, classNa
     }
 
     return (
-        <label className={"mb-0 " + className}>
+        <Label className={'mb-0 ' + className}>
             <input type="file" className="d-none" onChange={change} {...props} />
-            <span className="btn btn-secondary">{label}</span>
-        </label>
+            <img src={uploadSvg} alt="" width={40} />
+        </Label>
     )
 }
 
-export default styled(FileInput)<SpaceProps>(space);
+export default FileInput

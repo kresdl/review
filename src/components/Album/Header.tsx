@@ -7,6 +7,8 @@ import styled from '@emotion/styled'
 import { observer } from 'mobx-react-lite'
 import { useUpload } from 'lib/editor/hooks'
 import Invite from '../Invite'
+import closeIcon from 'images/close.svg'
+import Toggle from 'components/Toggle'
 
 type Params = {
     album: string
@@ -24,10 +26,11 @@ const AlbumHeader: React.FC = () => {
 
     return (
         <div className="form-group">
-            <Wrapper className="d-flex align-items-center justify-content-between">
-                <FileInput multiple required onPick={files => upload(files, album)} mr="0.5rem" label="Upload photo" />
-                {uploading && <Progress style={{ maxWidth: 500 }} value={progress!} />}
-                <Invite style={{ fontSize: '1.75rem' }}/>
+            <Wrapper className="d-flex align-items-center">
+                <FileInput className="mr-4" multiple required onPick={files => upload(files, album)} label="Upload photo" />
+                <Toggle className="mr-4 m" size={25} url={closeIcon} activeStyle={{ transform: 'scale(2)' }} onToggle={state => store.deleteMode = state} />
+                <Invite className="mr-4" size={35} album={album}/>
+                {uploading && <Progress value={progress!} />}
             </Wrapper>
             {store.message && <span className="text-danger">{store.message}</span>}
         </div>

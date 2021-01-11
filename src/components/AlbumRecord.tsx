@@ -27,17 +27,12 @@ const AlbumRecord: React.FC<Props> = ({ title }) => {
 
   return (
     <Wrapper className="d-flex align-items-center px-3 border rounded">
-      {
-        uploading
-          ? <Progress value={progress!} />
-          : <>
-              <Link to={`/user/album/${title}`}>
-                <H2 className="mb-1">{title}</H2>
-              </Link>
-              <Invite style={{ fontSize: '1.25rem', marginLeft: 'auto' }}>✉</Invite>
-              <button className="close" onClick={() => discardAlbum(title)}>&times;</button>
-            </>
-      }
+      <Link to={`/user/album/${title}`}>
+        <H2 className="mb-0 mr-3">{title}</H2>
+      </Link>
+      {uploading && <Progress className="mr-3" value={progress!} />}
+      <Invite size={22} style={{ fontSize: '1.25rem', marginLeft: 'auto' }} album={title} />
+      <button className="close" onClick={() => discardAlbum(title)}>&times;</button>
     </Wrapper>
   )
 }

@@ -14,7 +14,7 @@ button {
   appearance: none;
 }
 
-button:focus {
+input:focus, button:focus {
   outline: 0 !important;
 }
 

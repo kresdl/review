@@ -1,10 +1,10 @@
-import styled from "@emotion/styled"
-import { space, SpaceProps } from 'styled-system'
 import auth from "lib/auth"
-import { HTMLAttributes } from "react"
+import React, { HTMLAttributes } from "react"
+import sendSvg from 'images/email.svg'
+import ImageButton from "./ImageButton"
 
-const invite = () => {
-    const email = prompt('Send an album invitation to the following email adress:')
+const invite = (album: string) => {
+    const email = prompt(`Send a link for the album "${album}" to the following email adress:`)
     if (!email) return
 
     const settings = {
@@ -38,8 +38,13 @@ const invite = () => {
       });      
 }
 
-const Invite: React.FC<HTMLAttributes<HTMLButtonElement>> = ({ className, ...rest }) => (
-    <button onClick={invite} {...rest}>✉</button>
+type Props = {
+  size: number | string
+  album: string
+}
+
+const Invite: React.FC<Props & HTMLAttributes<HTMLButtonElement>> = ({ size, album, ...rest }) => (
+  <ImageButton onClick={() => invite(album)} size={size} url={sendSvg} {...rest} />
 )
 
-export default styled(Invite)<SpaceProps>(space)
+export default Invite

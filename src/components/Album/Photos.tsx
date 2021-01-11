@@ -1,4 +1,5 @@
 import { discardPhoto } from "lib/editor/tools"
+import store from "lib/store"
 import React, { CSSProperties } from "react"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
@@ -31,20 +32,28 @@ type Props = {
     photos: Photo[]
 }
 
-const Photos: React.FC<Props> = ({ album, photos }) => (
-    <div className="d-flex flex-wrap">
-        <TransitionGroup>
-            {
-                photos.map(({ name, url }) => (
-                    <Transition key={name} timeout={TRANSITION_DUR}>
-                        {
-                            state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => discardPhoto(name, album)} />
-                        }
-                    </Transition>
-                ))
-            }
-        </TransitionGroup>
-    </div>
-)
+const Photos: React.FC<Props> = ({ album, photos }) => {
+    
+    const click = (name: string) => {
+        if (store.deleteMode)
+            discardPhoto(name, album)
+    }
+
+    return (
+        <div className="d-flex flex-wrap">
+            <TransitionGroup>
+                {
+                    photos.map(({ name, url }) => (
+                        <Transition key={name} timeout={TRANSITION_DUR}>
+                            {
+                                state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => click(name)} />
+                            }
+                        </Transition>
+                    ))
+                }
+            </TransitionGroup>
+        </div>
+    )
+}
 
 export default Photos

@@ -13,6 +13,7 @@ const Thumbnail = styled.div<{ url: string } & SpaceProps>`
     height: 120px;
     flex-shrink: 0;
     border-radius: 4px;
+    cursor: pointer;
     ${space}
 `
 

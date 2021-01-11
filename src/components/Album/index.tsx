@@ -12,15 +12,13 @@ type Params = {
 const Album: React.FC = () => {
   const { album: albumTitle } = useRouteMatch<Params>('/user/album/:album')!.params
   const album = useAlbum(albumTitle)
-  const photos = album?.photos
+  if (!album) return null
+  const photos = album.photos
 
   return (
     <>
       <Header />
-      {
-        !!photos?.length &&
-        <Photos album={albumTitle} photos={photos} />
-      }
+      <Photos album={albumTitle} photos={photos} />
     </>
   )
 }

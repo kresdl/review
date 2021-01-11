@@ -3,6 +3,7 @@ import Input from './Input'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 import { addAlbum } from 'lib/db'
+import uploadSvg from 'images/cloud.svg'
 
 const UploadAlbum: React.FC = () => {
 
@@ -14,7 +15,6 @@ const UploadAlbum: React.FC = () => {
     const { value: title } = em
 
     try {
-
       addAlbum(title)
       form.reset()
       em.focus()
@@ -24,7 +24,7 @@ const UploadAlbum: React.FC = () => {
   return (
     <form onSubmit={submit}>
       <Input autoComplete="off" autoFocus={false} label="Title" required />
-      <button className="btn btn-primary" type="submit">Upload</button>
+      <input className="mr-4" type="image" width={50} src={uploadSvg} />
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )
