@@ -50,7 +50,7 @@ const Collapsable = <T extends Indexed>({ items, children, duration, ...rest }: 
   const { styles, ref } = useCollapse(duration)
 
   return (
-    <TransitionGroup {...rest} id="ul" component="ul">
+    <TransitionGroup {...rest} component="ul">
       {
         items?.map(item =>
           <Transition key={item.id} timeout={{ appear: +duration, exit: +duration }}>

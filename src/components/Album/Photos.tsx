@@ -1,9 +1,10 @@
+import store from "lib/store"
 import { discardPhoto } from "lib/tools"
+import { observer } from "mobx-react-lite"
 import React, { CSSProperties } from "react"
 import { useRouteMatch } from "react-router-dom"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
-import { Photo } from "types"
 import Thumbnail from "./Thumbnail"
 
 export const TRANSITION_DUR = 250
@@ -28,20 +29,20 @@ const states: Partial<Record<TransitionStatus, CSSProperties>> = {
 }
 
 type Params = {
-    album: string
-  }
-  
+    id: string
+}
+
 type Props = {
-    photos: Photo[]
     deleteMode: boolean
 }
 
-const Photos: React.FC<Props> = ({ photos, deleteMode }) => {
-    const { album } = useRouteMatch<Params>('/user/album/:album')!.params
-    
+const Photos: React.FC<Props> = ({ deleteMode }) => {
+    const { id } = useRouteMatch<Params>('/user/album/:id')!.params
+    const photos = store.index?.[id].photos
+    if (!photos) return null
+
     const click = (name: string) => {
-        if (deleteMode)
-            discardPhoto(name, album)
+        if (deleteMode) discardPhoto(name, id)
     }
 
     return (
@@ -61,4 +62,4 @@ const Photos: React.FC<Props> = ({ photos, deleteMode }) => {
     )
 }
 
-export default Photos
+export default observer(Photos)

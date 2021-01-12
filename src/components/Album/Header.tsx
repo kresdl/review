@@ -19,7 +19,7 @@ const H2 = styled.h2`
 `
 
 type Params = {
-    album: string
+    id: string
 }
 
 type Props = {
@@ -27,17 +27,20 @@ type Props = {
 }
 
 const AlbumHeader: React.FC<Props> = ({ setDeleteMode }) => {
-    const { album } = useRouteMatch<Params>('/user/album/:album')!.params
-    const progress = store.tasks[album]
+    const { id } = useRouteMatch<Params>('/user/album/:id')!.params
+    const title = store.index?.[id].title
+    if (!title) return null
+
+    const progress = store.tasks[id]
     const uploading = typeof progress === 'number'
 
     return (
         <div className="form-group">
             <Wrapper className="d-flex align-items-center">
-                <H2 className="mr-4">{album}</H2>
-                <FileInput className="mr-4" multiple required onPick={files => uploadParallel(files, album)} label="Upload photo" />
+                <H2 className="mr-4">{title}</H2>
+                <FileInput className="mr-4" multiple required onPick={files => uploadParallel(files, id)} label="Upload photo" />
                 <Toggle className="mr-4 m" size={25} url={closeIcon} activeStyle={{ transform: 'scale(2)' }} onToggle={setDeleteMode} />
-                <Invite className="mr-4" size={35} album={album}/>
+                <Invite className="mr-4" size={35} album={title}/>
                 {uploading && <Progress value={progress!} />}
             </Wrapper>
             {store.message && <span className="text-danger">{store.message}</span>}

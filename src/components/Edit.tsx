@@ -3,13 +3,15 @@ import React from 'react'
 type Props = {
     onAccept: (text: string) => void
     onCancel: () => void
+    initial?: string
 }
 
-const Edit: React.FC<Props> = ({ onAccept, onCancel }) => {
+const Edit: React.FC<Props> = ({ onAccept, onCancel, initial }) => {
 
     const accept = (evt: React.SyntheticEvent<HTMLInputElement>) => {
-        const em = evt.target as HTMLInputElement
-        onAccept(em.value)
+        const { value } = evt.target as HTMLInputElement
+        if (!value) return
+        onAccept(value)
     }
 
     const input = (evt: React.KeyboardEvent<HTMLInputElement>) => {
@@ -20,7 +22,7 @@ const Edit: React.FC<Props> = ({ onAccept, onCancel }) => {
     }
 
     return (
-        <input autoFocus onBlur={accept} className="flex-grow-1 mr-2 form-control" onKeyDown={input} type="text"></input>
+        <input required autoFocus onBlur={accept} className="flex-grow-1 mr-2 form-control" onKeyDown={input} type="text" defaultValue={initial}></input>
     )
 }
 

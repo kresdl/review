@@ -1,5 +1,5 @@
 import { action, observable, makeObservable } from 'mobx';
-import { Album, Index } from 'types';
+import { Album, Index, SavedAlbum, Tasks } from 'types';
 import auth from './auth';
 import { getUserRef } from './db';
 class Store {
@@ -16,10 +16,15 @@ class Store {
                 .collection('albums')
                 .onSnapshot(
                     async snapshot => {
-                        const albums = snapshot.docs.map(doc => doc.data() as Album)
-                        const index = albums.reduce<Index>(
-                            (acc, e) => ({ ...acc, [e.title]: e.photos }), {}
-                        )
+                        const index = snapshot.docs.reduce<Index>((acc, doc) => {
+                            const album = doc.data() as Album
+                            const saved = { id: doc.id, ...album } as SavedAlbum
+                            return {
+                                ...acc,
+                                [doc.id]: saved
+                            }
+                        }, {})
+
                         this.setIndex(index)
                     },
                     console.log
@@ -30,7 +35,7 @@ class Store {
     firestoreUnsubscribe?: () => void | null
 
     @observable
-    tasks: Record<string, number | null> = {}
+    tasks: Tasks = {}
 
     @observable
     index?: Index | null
@@ -41,12 +46,12 @@ class Store {
     @observable
     message?: string | null
 
-    getTaskControls = (album: string) =>
+    getTaskControls = (albumId: string) =>
         action(
             (value: number | null) => {
                 this.tasks = {
                     ...this.tasks,
-                    [album]: value
+                    [albumId]: value
                 }
             }
         )

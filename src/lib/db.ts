@@ -18,19 +18,19 @@ export const addUser = (id: string, name: string, lastName: string, email: strin
 export const addAlbum = (title: string) =>
     getUserRef()
         .collection('albums')
-        .doc(title)
+        .doc()
         .set({ title, photos: [] }, { merge: true })
 
-export const renameAlbum = (title: string, newTitle: string) =>
+export const renameAlbum = (id: string, newTitle: string) =>
     getUserRef()
         .collection('albums')
-        .doc(title)
+        .doc(id)
         .update({ title: newTitle })
 
-export const prepareAddPhoto = async (album: string) => {
+export const prepareAddPhoto = async (albumId: string) => {
     const userRef = getUserRef()
 
-    const albumRef = userRef.collection('albums').doc(album)
+    const albumRef = userRef.collection('albums').doc(albumId)
     const albumDoc = await albumRef.get()
     if (!albumDoc.exists) throw Error('No album')
 
@@ -53,11 +53,11 @@ export const prepareAddPhoto = async (album: string) => {
     }
 }
 
-export const removePhotoFromAlbum = async (name: string, albumTitle: string) =>
+export const removePhotoFromAlbum = async (name: string, albumId: string) =>
     db.runTransaction(async transaction => {
         const userRef = getUserRef()
 
-        const albumRef = userRef.collection('albums').doc(albumTitle)
+        const albumRef = userRef.collection('albums').doc(albumId)
         const albumDoc = await transaction.get(albumRef)
         if (!albumDoc.exists) throw Error('No album')
 
@@ -77,31 +77,29 @@ export const removePhotoFromAlbum = async (name: string, albumTitle: string) =>
         return count - 1
     })
 
-export const removeAlbum = async (title: string) => {
+export const removeAlbum = async (id: string) => {
     const userRef = getUserRef()
 
-    const statRef = userRef.collection('stat').doc('refs')
-    const statDoc = await statRef.get()
-    if (!statDoc.exists) throw Error('No ref doc')
-
-    const albumRef = userRef.collection('albums').doc(title)
+    const albumRef = userRef.collection('albums').doc(id)
     const albumDoc = await albumRef.get()
     if (!albumDoc.exists) throw Error('No album')
 
-    const array = albumDoc.data()!.photos as Photo[]
+    const photos = albumDoc.data()!.photos as Photo[]
     albumRef.delete()
 
-    const refs = statDoc.data() as Refs
+    const statRef = userRef.collection('stat').doc('refs')
+    const statDoc = await statRef.get()
 
-    const newRefs = array.reduce<Refs>((acc, { name }) => ({
+    const refs = statDoc.data() as Refs | undefined
+    if (!refs) return []
+
+    const newRefs = photos.reduce<Refs>((acc, { name }) => ({
         ...acc,
         [name]: refs[name] - 1
     }), {})
 
     statRef.set(newRefs, { merge: true })
 
-    return array.reduce<string[]>(
-        (arr, { name }) => newRefs[name] ? arr : [...arr, name],
-        []
-    )
+    return photos.map(p => p.name)
+        .filter(n => !newRefs[n])
 }

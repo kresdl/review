@@ -13,6 +13,7 @@ const UploadAlbum: React.FC = () => {
     const form = e.target as HTMLFormElement
     const em = form.elements.namedItem('title') as HTMLInputElement
     const { value: title } = em
+    if (!title) return
 
     try {
       addAlbum(title)

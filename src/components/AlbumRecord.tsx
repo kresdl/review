@@ -22,16 +22,19 @@ const Wrapper = styled.div`
 `
 
 type Props = {
-  title: string
+  id: string
 }
 
-const AlbumRecord: React.FC<Props> = ({ title }) => {
+const AlbumRecord: React.FC<Props> = ({ id }) => {
+  const [editing, setEditing] = useState(false)
+  const title = store.index?.[id]?.title
+  if (!title) return null
+  
   const progress = store.tasks[title]
   const uploading = typeof progress === 'number'
-  const [editing, setEditing] = useState(false)
 
   const accept = (text: string) => {
-    renameAlbum(title, text)
+    renameAlbum(id, text)
     setEditing(false)
   }
 
@@ -42,9 +45,9 @@ const AlbumRecord: React.FC<Props> = ({ title }) => {
     <Wrapper className="d-flex align-items-center px-3 border rounded">
       {
         editing
-          ? <Edit onAccept={accept} onCancel={cancel}/>
+          ? <Edit onAccept={accept} onCancel={cancel} initial={title} />
           : <>
-              <Link className="mr-2" to={`/user/album/${title}`}>
+              <Link className="mr-2" to={`/user/album/${id}`}>
                 <H2 className="mb-0">{title}</H2>
               </Link>
               <ImageButton size={20} url={pencilSvg} onClick={edit}/>
@@ -52,7 +55,7 @@ const AlbumRecord: React.FC<Props> = ({ title }) => {
       }
       {uploading && <Progress className="mr-3" value={progress!} />}
       <Invite className="ml-auto" size={22} album={title} />
-      <button className="close" onClick={() => discardAlbum(title)}>&times;</button>
+      <button className="close" onClick={() => discardAlbum(id)}>&times;</button>
     </Wrapper >
   )
 }
