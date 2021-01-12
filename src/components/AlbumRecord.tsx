@@ -30,7 +30,7 @@ const AlbumRecord: React.FC<Props> = ({ id }) => {
   const title = store.index?.[id]?.title
   if (!title) return null
   
-  const progress = store.tasks[title]
+  const progress = store.tasks[id]
   const uploading = typeof progress === 'number'
 
   const accept = (text: string) => {

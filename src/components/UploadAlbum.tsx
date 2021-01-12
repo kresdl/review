@@ -24,8 +24,9 @@ const UploadAlbum: React.FC = () => {
 
   return (
     <form onSubmit={submit}>
-      <Input autoComplete="off" autoFocus={false} label="Title" required />
-      <input className="mr-4" type="image" width={50} src={uploadSvg} />
+      <Input autoComplete="off" autoFocus={false} label="Title" required className="form-inline mr-3">
+        <input type="image" width={50} src={uploadSvg} alt="" />
+      </Input>
       {store.message && <span className="text-danger">{store.message}</span>}
     </form>
   )

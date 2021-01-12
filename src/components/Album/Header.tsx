@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import FileInput from './FileInput'
 import store from 'lib/store'
 import Progress from '../Progress'
@@ -26,8 +26,8 @@ type Props = {
     setDeleteMode: (state: boolean) => void
 }
 
-const AlbumHeader: React.FC<Props> = ({ setDeleteMode }) => {
-    const { id } = useRouteMatch<Params>('/user/album/:id')!.params
+const Header: React.FC<Props> = ({ setDeleteMode }) => {
+    const { id } = useParams<Params>()
     const title = store.index?.[id].title
     if (!title) return null
 
@@ -48,4 +48,4 @@ const AlbumHeader: React.FC<Props> = ({ setDeleteMode }) => {
     )
 }
 
-export default observer(AlbumHeader)
+export default observer(Header)

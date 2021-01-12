@@ -23,7 +23,7 @@ const Toggle: React.FC<Props & HTMLAttributes<HTMLInputElement>> = ({ size, url,
 
     return (
         <Label style={active ? activeStyle : style} className={className}>
-            <img width={size} src={url} />
+            <img width={size} src={url} alt="" />
             <input className="d-none" type="checkbox" {...rest} onChange={change} />
         </Label>
     )

@@ -2,7 +2,7 @@ import store from "lib/store"
 import { discardPhoto } from "lib/tools"
 import { observer } from "mobx-react-lite"
 import React, { CSSProperties } from "react"
-import { useRouteMatch } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
 import Thumbnail from "./Thumbnail"
@@ -37,12 +37,16 @@ type Props = {
 }
 
 const Photos: React.FC<Props> = ({ deleteMode }) => {
-    const { id } = useRouteMatch<Params>('/user/album/:id')!.params
+    const { id } = useParams<Params>()
     const photos = store.index?.[id].photos
     if (!photos) return null
 
-    const click = (name: string) => {
-        if (deleteMode) discardPhoto(name, id)
+    const link = (name: string, evt: React.SyntheticEvent) => {
+        if (deleteMode) {
+            evt.preventDefault()
+            evt.stopPropagation()
+            discardPhoto(name, id)
+        }
     }
 
     return (
@@ -52,7 +56,11 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
                     photos.map(({ name, url }) => (
                         <Transition key={name} timeout={TRANSITION_DUR}>
                             {
-                                state => <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} onClick={() => click(name)} />
+                                state => (
+                                    <Link to={{ pathname: '/user/mag', state: url }} onClick={link.bind(0, name)}>
+                                        <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} />
+                                    </Link>
+                                )
                             }
                         </Transition>
                     ))

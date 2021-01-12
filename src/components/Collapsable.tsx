@@ -33,7 +33,7 @@ const useCollapse = (duration: number | string) => {
       entering: { opacity: 0, marginBottom, position, zIndex },
       entered: { opacity: 1, marginBottom: 0, ...animate },
       exiting: { opacity: 0, marginBottom, position, zIndex, ...animate },
-      exited: { opacity: 0, marginBottom, position, zIndex }
+      exited: { opacity: 0, marginBottom, position, zIndex },
     }
   }, [duration])
 

@@ -7,9 +7,9 @@ type Props = {
   label: string
 }
 
-export const Input: React.FC<Props & Extend<HTMLInputElement>> = ({ label, invalid = false, ...rest }) => {
+export const Input: React.FC<Props & Extend<HTMLInputElement>> = ({ children, label, invalid = false, className, ...rest }) => {
   const props = {
-    className: `form-control ${invalid ? 'is-invalid' : ''}`,
+    className: 'form-control flex-grow-1 ' + (invalid ? 'is-invalid ' : '') + className,
     id: rest.id || label.toLocaleLowerCase().replace(' ', '-'),
     ...rest
   }
@@ -17,7 +17,10 @@ export const Input: React.FC<Props & Extend<HTMLInputElement>> = ({ label, inval
   return (
     <div className="form-group">
       <label htmlFor={props.id}>{label}</label>
-      <input {...props} />
+      <div className="form-inline align-items-center">
+        <input {...props} />
+        {children}
+      </div>
     </div>
   )
 }
