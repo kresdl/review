@@ -1,6 +1,6 @@
-import { discardPhoto } from "lib/editor/tools"
-import store from "lib/store"
+import { discardPhoto } from "lib/tools"
 import React, { CSSProperties } from "react"
+import { useRouteMatch } from "react-router-dom"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
 import { Photo } from "types"
@@ -27,15 +27,20 @@ const states: Partial<Record<TransitionStatus, CSSProperties>> = {
     }
 }
 
+type Params = {
+    album: string
+  }
+  
 type Props = {
-    album: string,
     photos: Photo[]
+    deleteMode: boolean
 }
 
-const Photos: React.FC<Props> = ({ album, photos }) => {
+const Photos: React.FC<Props> = ({ photos, deleteMode }) => {
+    const { album } = useRouteMatch<Params>('/user/album/:album')!.params
     
     const click = (name: string) => {
-        if (store.deleteMode)
+        if (deleteMode)
             discardPhoto(name, album)
     }
 
@@ -46,7 +51,7 @@ const Photos: React.FC<Props> = ({ album, photos }) => {
                     photos.map(({ name, url }) => (
                         <Transition key={name} timeout={TRANSITION_DUR}>
                             {
-                                state => <Thumbnail mb="0.8rem" mr="0.8rem" key={name} url={url} style={states[state]} onClick={() => click(name)} />
+                                state => <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} onClick={() => click(name)} />
                             }
                         </Transition>
                     ))

@@ -4,9 +4,9 @@ export type Stylable = {
 
 export type Extend<T extends HTMLElement> = React.HTMLProps<T> & React.HTMLAttributes<T>;
 
-export type Album<T = string> = {
+export type Album = {
   title: string
-  photos: T[],
+  photos: Photo[],
 }
 
 export type User = {
@@ -21,8 +21,4 @@ export type Photo = {
   name: string
 }
 
-export type Stat = {
-  count: number
-}
-
-export type Index = Record<string, string[]>
+export type Index = Record<string, Photo[]>

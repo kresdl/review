@@ -29,8 +29,6 @@ class Store {
 
     firestoreUnsubscribe?: () => void | null
 
-    deleteMode = false
-
     @observable
     tasks: Record<string, number | null> = {}
 

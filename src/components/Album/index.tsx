@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Header from './Header'
 import { useRouteMatch } from 'react-router-dom'
-import { useAlbum } from 'lib/editor/hooks'
+import { useAlbum } from 'lib/hooks'
 import Photos from './Photos'
 import { observer } from 'mobx-react-lite'
 
@@ -10,15 +10,16 @@ type Params = {
 }
 
 const Album: React.FC = () => {
-  const { album: albumTitle } = useRouteMatch<Params>('/user/album/:album')!.params
-  const album = useAlbum(albumTitle)
+  const { album: title } = useRouteMatch<Params>('/user/album/:album')!.params
+  const album = useAlbum(title)
+  const [deleteMode, setDeleteMode] = useState(false)
   if (!album) return null
   const photos = album.photos
 
   return (
     <>
-      <Header />
-      <Photos album={albumTitle} photos={photos} />
+      <Header setDeleteMode={setDeleteMode} />
+      <Photos {...{ photos, deleteMode }} />
     </>
   )
 }

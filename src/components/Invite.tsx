@@ -1,6 +1,6 @@
 import auth from "lib/auth"
 import React, { HTMLAttributes } from "react"
-import sendSvg from 'images/email.svg'
+import svg from 'images/email.svg'
 import ImageButton from "./ImageButton"
 
 const invite = (album: string) => {
@@ -44,7 +44,7 @@ type Props = {
 }
 
 const Invite: React.FC<Props & HTMLAttributes<HTMLButtonElement>> = ({ size, album, ...rest }) => (
-  <ImageButton onClick={() => invite(album)} size={size} url={sendSvg} {...rest} />
+  <ImageButton onClick={() => invite(album)} size={size} url={svg} {...rest} />
 )
 
 export default Invite
