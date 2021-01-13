@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 import Login from './Login'
 import Register from './Register'
-import { Route, Switch, useLocation } from 'react-router-dom'
-import auth from 'lib/auth'
+import { Route, Switch } from 'react-router-dom'
 
 const H1 = styled.h1`
   font-size: 4rem;

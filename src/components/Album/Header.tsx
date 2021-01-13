@@ -50,7 +50,7 @@ const Header: React.FC<Props> = ({ setDeleteMode }) => {
                 <H2 className="mr-4">{title}</H2>
                 <FileInput className="mr-4" multiple required onPick={selectFiles} label="Upload photo" />
                 <DeletePhoto className="mr-4 m" size={25} url={closeIcon} activeStyle={activeStyle} onToggle={setDeleteMode} />
-                <Invite className="mr-4" size={35} album={title}/>
+                <Invite className="mr-4" size={35} albumName={title} albumId={id} />
                 {uploading && <Progress value={progress!} />}
             </Wrapper>
             {store.message && <span className="text-danger">{store.message}</span>}

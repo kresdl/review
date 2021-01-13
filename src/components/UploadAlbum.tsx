@@ -7,29 +7,29 @@ import uploadSvg from 'images/cloud.svg'
 
 const UploadAlbum: React.FC = () => {
 
-  const submit: React.FormEventHandler<HTMLFormElement> = e => {
-    e.preventDefault()
+    const submit: React.FormEventHandler<HTMLFormElement> = e => {
+        e.preventDefault()
 
-    const form = e.target as HTMLFormElement
-    const em = form.elements.namedItem('title') as HTMLInputElement
-    const { value: title } = em
-    if (!title) return
+        const form = e.target as HTMLFormElement
+        const em = form.elements.namedItem('title') as HTMLInputElement
+        const { value: title } = em
+        if (!title) return
 
-    try {
-      addAlbum(title)
-      form.reset()
-      em.focus()
-    } catch {}
-  }
+        try {
+            addAlbum(title)
+            form.reset()
+            em.focus()
+        } catch { }
+    }
 
-  return (
-    <form onSubmit={submit}>
-      <Input autoComplete="off" autoFocus={false} label="Title" required className="form-inline mr-3">
-        <input type="image" width={50} src={uploadSvg} alt="" />
-      </Input>
-      {store.message && <span className="text-danger">{store.message}</span>}
-    </form>
-  )
+    return (
+        <form onSubmit={submit}>
+            <Input autoComplete="off" autoFocus={false} label="Title" required className="form-inline mr-3">
+                <input type="image" width={50} src={uploadSvg} alt="" />
+            </Input>
+            {store.message && <span className="text-danger">{store.message}</span>}
+        </form>
+    )
 }
 
 export default observer(UploadAlbum)

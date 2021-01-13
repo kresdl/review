@@ -14,11 +14,21 @@ export const addUser = (id: string, name: string, lastName: string, email: strin
         .doc(id)
         .set({ name, lastName, email })
 
+export const grantGuest = (email: string, albumId: string) => 
+    getUserRef()
+        .collection('albums')
+        .doc(albumId)
+        .update({ granted: firebase.firestore.FieldValue.arrayUnion(email) })
+
 export const addAlbum = (title: string) =>
     getUserRef()
         .collection('albums')
         .doc()
-        .set({ title, photos: [] }, { merge: true })
+        .set({ 
+            title, 
+            photos: [],
+            granted: [],
+        }, { merge: true })
 
 export const renameAlbum = (id: string, newTitle: string) =>
     getUserRef()

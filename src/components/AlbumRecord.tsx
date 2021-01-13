@@ -22,42 +22,42 @@ const Wrapper = styled.div`
 `
 
 type Props = {
-  title: string
-  id: string
+    title: string
+    id: string
 }
 
 const AlbumRecord: React.FC<Props> = ({ title, id }) => {
-  const [editing, setEditing] = useState(false)
-  if (!store.index) return null
-  
-  const progress = store.tasks[id]
-  const uploading = typeof progress === 'number'
+    const [editing, setEditing] = useState(false)
+    if (!store.index) return null
 
-  const accept = (text: string) => {
-    renameAlbum(id, text)
-    setEditing(false)
-  }
+    const progress = store.tasks[id]
+    const uploading = typeof progress === 'number'
 
-  const edit = () => setEditing(true)
-  const cancel = () => setEditing(false)
+    const accept = (text: string) => {
+        renameAlbum(id, text)
+        setEditing(false)
+    }
 
-  return (
-    <Wrapper className="d-flex align-items-center px-3 border rounded">
-      {
-        editing
-          ? <Edit onAccept={accept} onCancel={cancel} initial={title} />
-          : <>
-              <Link className="mr-2" to={`/user/album/${id}`}>
-                <H2 className="mb-0">{title}</H2>
-              </Link>
-              <ImageButton className="mr-2" size={20} url={pencilSvg} onClick={edit} />
-            </>
-      }
-      {uploading && <Progress className="mr-3" value={progress!} />}
-      <Invite className="ml-auto" size={22} album={title} />
-      <button className="close" onClick={() => discardAlbum(id)}>&times;</button>
-    </Wrapper >
-  )
+    const edit = () => setEditing(true)
+    const cancel = () => setEditing(false)
+
+    return (
+        <Wrapper className="d-flex align-items-center px-3 border rounded">
+            {
+                editing
+                    ? <Edit onAccept={accept} onCancel={cancel} initial={title} />
+                    : <>
+                        <Link className="mr-2" to={`/user/album/${id}`}>
+                            <H2 className="mb-0">{title}</H2>
+                        </Link>
+                        <ImageButton className="mr-2" size={20} url={pencilSvg} onClick={edit} />
+                    </>
+            }
+            {uploading && <Progress className="mr-3" value={progress!} />}
+            <Invite className="ml-auto" size={22} albumName={title} albumId={id} />
+            <button className="close" onClick={() => discardAlbum(id)}>&times;</button>
+        </Wrapper >
+    )
 }
 
 export default observer(AlbumRecord)
