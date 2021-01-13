@@ -8,8 +8,11 @@ export type Saved = {
   id: string
 }
 
-export type Album = {
+export type Titled = {
   title: string
+}
+
+export type Album = Titled & {
   photos: Photo[]
 }
 

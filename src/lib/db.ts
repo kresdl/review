@@ -1,5 +1,5 @@
 import firebase from 'firebase/app'
-import { Photo } from 'types'
+import { Album, Index, Photo, SavedAlbum } from 'types'
 import { getUser } from './auth'
 
 type Refs = Record<string, number>
@@ -8,7 +8,6 @@ const db = firebase.firestore()
 
 export const getUserRef = (uid?: string) =>
     db.collection('users').doc(uid || getUser().uid)
-
 
 export const addUser = (id: string, name: string, lastName: string, email: string) =>
     db.collection('users')
@@ -103,3 +102,22 @@ export const removeAlbum = async (id: string) => {
     return photos.map(p => p.name)
         .filter(n => !newRefs[n])
 }
+
+export const subscribe = (onUpdate: (index: Index) => void) =>
+    getUserRef()
+        .collection('albums')
+        .onSnapshot(
+            async snapshot => {
+                const index = snapshot.docs.reduce<Index>((acc, doc) => {
+                    const album = doc.data() as Album
+                    const saved = { id: doc.id, ...album } as SavedAlbum
+                    return {
+                        ...acc,
+                        [doc.id]: saved
+                    }
+                }, {})
+
+                onUpdate(index)
+            },
+            console.log
+        )

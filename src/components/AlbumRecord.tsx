@@ -22,13 +22,13 @@ const Wrapper = styled.div`
 `
 
 type Props = {
+  title: string
   id: string
 }
 
-const AlbumRecord: React.FC<Props> = ({ id }) => {
+const AlbumRecord: React.FC<Props> = ({ title, id }) => {
   const [editing, setEditing] = useState(false)
-  const title = store.index?.[id]?.title
-  if (!title) return null
+  if (!store.index) return null
   
   const progress = store.tasks[id]
   const uploading = typeof progress === 'number'
@@ -50,7 +50,7 @@ const AlbumRecord: React.FC<Props> = ({ id }) => {
               <Link className="mr-2" to={`/user/album/${id}`}>
                 <H2 className="mb-0">{title}</H2>
               </Link>
-              <ImageButton size={20} url={pencilSvg} onClick={edit}/>
+              <ImageButton className="mr-2" size={20} url={pencilSvg} onClick={edit} />
             </>
       }
       {uploading && <Progress className="mr-3" value={progress!} />}

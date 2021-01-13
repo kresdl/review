@@ -10,6 +10,14 @@ import Invite from '../Invite'
 import closeIcon from 'images/close.svg'
 import Toggle from 'components/Toggle'
 
+const activeStyle = { transform: 'scale(1.75)' }
+
+const DeletePhoto = styled(Toggle)`
+    position: relative;
+    transition: transform 250ms;
+    transform: translateZ(0);
+`
+
 const Wrapper = styled.div`
     height: 3rem;
 `
@@ -31,6 +39,8 @@ const Header: React.FC<Props> = ({ setDeleteMode }) => {
     const title = store.index?.[id].title
     if (!title) return null
 
+    const selectFiles = (files: File[]) => uploadParallel(files, id)
+
     const progress = store.tasks[id]
     const uploading = typeof progress === 'number'
 
@@ -38,8 +48,8 @@ const Header: React.FC<Props> = ({ setDeleteMode }) => {
         <div className="form-group">
             <Wrapper className="d-flex align-items-center">
                 <H2 className="mr-4">{title}</H2>
-                <FileInput className="mr-4" multiple required onPick={files => uploadParallel(files, id)} label="Upload photo" />
-                <Toggle className="mr-4 m" size={25} url={closeIcon} activeStyle={{ transform: 'scale(2)' }} onToggle={setDeleteMode} />
+                <FileInput className="mr-4" multiple required onPick={selectFiles} label="Upload photo" />
+                <DeletePhoto className="mr-4 m" size={25} url={closeIcon} activeStyle={activeStyle} onToggle={setDeleteMode} />
                 <Invite className="mr-4" size={35} album={title}/>
                 {uploading && <Progress value={progress!} />}
             </Wrapper>

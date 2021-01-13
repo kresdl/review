@@ -1,38 +1,20 @@
 import { action, observable, makeObservable } from 'mobx';
-import { Album, Index, SavedAlbum, Tasks } from 'types';
+import { Index, Tasks } from 'types';
 import auth from './auth';
-import { getUserRef } from './db';
+import { subscribe } from './db';
 class Store {
     constructor() {
         makeObservable(this)
 
         auth.onAuthStateChanged(user => {
             this.setUser(user?.uid)
-
-            this.firestoreUnsubscribe && this.firestoreUnsubscribe()
+            this.unsubscribe && this.unsubscribe()
             if (!this.uid) return this.setIndex(null)
-
-            this.firestoreUnsubscribe = getUserRef(this.uid)
-                .collection('albums')
-                .onSnapshot(
-                    async snapshot => {
-                        const index = snapshot.docs.reduce<Index>((acc, doc) => {
-                            const album = doc.data() as Album
-                            const saved = { id: doc.id, ...album } as SavedAlbum
-                            return {
-                                ...acc,
-                                [doc.id]: saved
-                            }
-                        }, {})
-
-                        this.setIndex(index)
-                    },
-                    console.log
-                )
+            else this.unsubscribe = subscribe(this.setIndex)
         })
     }
 
-    firestoreUnsubscribe?: () => void | null
+    unsubscribe?: () => void | null
 
     @observable
     tasks: Tasks = {}

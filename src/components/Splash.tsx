@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from '@emotion/styled'
 import store from 'lib/store'
 import { observer } from 'mobx-react-lite'
 import Login from './Login'
 import Register from './Register'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useLocation } from 'react-router-dom'
+import auth from 'lib/auth'
 
 const H1 = styled.h1`
   font-size: 4rem;
@@ -14,7 +15,7 @@ const Center = styled.main`
   width: 20rem;
 `
 
-const Splash: React.FC = () => (
+const Splash: React.FC = () => (  
   <>
     <header className="jumbotron">
       <H1 className="text-center display-1 text-primary">Photo album X2000</H1>

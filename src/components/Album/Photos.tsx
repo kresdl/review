@@ -41,11 +41,11 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
     const photos = store.index?.[id].photos
     if (!photos) return null
 
-    const link = (name: string, evt: React.SyntheticEvent) => {
+    function link(this: string, evt: React.SyntheticEvent) {
         if (deleteMode) {
             evt.preventDefault()
             evt.stopPropagation()
-            discardPhoto(name, id)
+            discardPhoto(this, id)
         }
     }
 
@@ -57,7 +57,7 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
                         <Transition key={name} timeout={TRANSITION_DUR}>
                             {
                                 state => (
-                                    <Link to={{ pathname: '/user/mag', state: url }} onClick={link.bind(0, name)}>
+                                    <Link to={{ pathname: '/user/mag', state: url }} onClick={link.bind(name)}>
                                         <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} />
                                     </Link>
                                 )
