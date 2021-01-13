@@ -5,7 +5,7 @@ import ImageButton from "./ImageButton"
 import { grantGuest } from "lib/db"
 
 const invite = async (albumId: string, albumName: string) => {
-    const email = prompt(`Send a link for the album "${albumName}" to the following email adress:`, 'peter.hallstrom@medieinstitutet.com')
+    const email = prompt(`Send a link for the album "${albumName}" to the following email adress:`, 'peter.hallstrom@medieinstitutet.se')
     if (!email) return
 
     const settings = {

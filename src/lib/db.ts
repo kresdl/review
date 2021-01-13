@@ -6,44 +6,38 @@ type Refs = Record<string, number>
 
 const db = firebase.firestore()
 
-export const getUserRef = (uid?: string) =>
-    db.collection('users').doc(uid || getUser().uid)
-
 export const addUser = (id: string, name: string, lastName: string, email: string) =>
     db.collection('users')
         .doc(id)
         .set({ name, lastName, email })
 
 export const grantGuest = (email: string, albumId: string) => 
-    getUserRef()
-        .collection('albums')
+    db.collection('albums')
         .doc(albumId)
         .update({ granted: firebase.firestore.FieldValue.arrayUnion(email) })
 
 export const addAlbum = (title: string) =>
-    getUserRef()
-        .collection('albums')
-        .doc()
-        .set({ 
+    db.collection('albums')
+        .add({ 
+            user: getUser().uid,
             title, 
             photos: [],
             granted: [],
-        }, { merge: true })
+        })
 
 export const renameAlbum = (id: string, newTitle: string) =>
-    getUserRef()
-        .collection('albums')
+    db.collection('albums')
         .doc(id)
         .update({ title: newTitle })
 
 export const prepareAddPhoto = async (albumId: string) => {
-    const userRef = getUserRef()
+    const { uid } = getUser()
 
-    const albumRef = userRef.collection('albums').doc(albumId)
+    const albumRef = db.collection('albums').doc(albumId)
     const albumDoc = await albumRef.get()
     if (!albumDoc.exists) throw Error('No album')
 
-    const statRef = userRef.collection('stat').doc('refs')
+    const statRef = db.collection('stat').doc(uid)
     const statDoc = await statRef.get()
 
     const array = albumDoc.data()!.photos as Photo[]
@@ -64,16 +58,16 @@ export const prepareAddPhoto = async (albumId: string) => {
 
 export const removePhotoFromAlbum = async (name: string, albumId: string) =>
     db.runTransaction(async transaction => {
-        const userRef = getUserRef()
+        const { uid } = getUser()
 
-        const albumRef = userRef.collection('albums').doc(albumId)
+        const albumRef = db.collection('albums').doc(albumId)
         const albumDoc = await transaction.get(albumRef)
         if (!albumDoc.exists) throw Error('No album')
 
         const array = albumDoc.data()!.photos as Photo[]
         if (!array.some(photo => photo.name === name)) throw Error('Photo not in album')
 
-        const statRef = userRef.collection('stat').doc('refs')
+        const statRef = db.collection('stat').doc(uid)
         const statDoc = await transaction.get(statRef)
         if (!statDoc.exists) throw Error('No ref doc')
 
@@ -87,16 +81,16 @@ export const removePhotoFromAlbum = async (name: string, albumId: string) =>
     })
 
 export const removeAlbum = async (id: string) => {
-    const userRef = getUserRef()
+    const { uid } = getUser()
 
-    const albumRef = userRef.collection('albums').doc(id)
+    const albumRef = db.collection('albums').doc(id)
     const albumDoc = await albumRef.get()
     if (!albumDoc.exists) throw Error('No album')
 
     const photos = albumDoc.data()!.photos as Photo[]
     albumRef.delete()
 
-    const statRef = userRef.collection('stat').doc('refs')
+    const statRef = db.collection('stat').doc(uid)
     const statDoc = await statRef.get()
 
     const refs = statDoc.data() as Refs | undefined
@@ -114,8 +108,8 @@ export const removeAlbum = async (id: string) => {
 }
 
 export const subscribe = (onUpdate: (index: Index) => void) =>
-    getUserRef()
-        .collection('albums')
+    db.collection('albums')
+        .where('user', '==', getUser().uid)
         .onSnapshot(
             async snapshot => {
                 const index = snapshot.docs.reduce<Index>((acc, doc) => {
