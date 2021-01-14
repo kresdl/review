@@ -49,7 +49,7 @@ const AlbumRecord: React.FC<Props> = ({ title, id }) => {
                         <Link className="mr-2" to={`/album/${id}`}>
                             <H2 className="mb-0">{title}</H2>
                         </Link>
-                        <ImageButton className="mr-2" size={20} url={pencilSvg} onClick={edit} />
+                        <ImageButton className="mr-2" imageSize={20} url={pencilSvg} onClick={edit} />
                     </>
             }
             {uploading && <Progress className="mr-3" value={progress!} />}

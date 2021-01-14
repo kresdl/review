@@ -5,34 +5,36 @@ import { QueryClientProvider, QueryClient } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { observer } from 'mobx-react-lite'
 import Guest from './Guest'
-import { Role } from 'types'
 import store from 'lib/store'
 import { getUserFromStorage } from 'lib/util'
 import useAuthChange from 'lib/hooks/use-auth-change'
+import { useCatchGuest } from 'lib/hooks'
+import { Route, Switch } from 'react-router-dom'
 
 const queryClient = new QueryClient()
 
-const elements: Record<Role | 'default', React.ReactElement> = {
-    guest: <Guest />,
-    user: <User />,
-    default: <Splash />,
-}
+const authRoutes = (
+    <Switch>
+        <Route path="/guest"><Guest /></Route>
+        <Route path="/"><User /></Route>
+    </Switch>
+)
 
 const App: React.FC = () => {
-    useAuthChange(
-        user => {
-            if (user) sessionStorage.setItem('user', JSON.stringify(user))
-            else sessionStorage.removeItem('user')
-            store.reset(user)
-        },
-        []
+    useCatchGuest()
+
+    useAuthChange(user => {
+        if (user) sessionStorage.setItem('user', JSON.stringify(user))
+        else sessionStorage.removeItem('user')
+        store.reset(user)
+    }, []
     )
 
-    const user = store.user || getUserFromStorage() // Kringgår en onödig redirect
+    const user = store.user || getUserFromStorage() // Kringgå en onödig redirect
 
     return (
         <QueryClientProvider client={queryClient}>
-            {elements[user?.role || 'default']}
+            {user ? authRoutes : <Splash />}
             <ReactQueryDevtools />
         </QueryClientProvider>
     )

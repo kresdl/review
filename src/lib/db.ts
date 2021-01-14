@@ -18,12 +18,12 @@ export const grantGuest = (email: string, albumId: string) =>
         .doc(albumId)
         .update({ granted: firebase.firestore.FieldValue.arrayUnion(email) })
 
-export const addAlbum = (title: string) =>
+export const addAlbum = (title: string, photos?: Photo[], uid?: string) =>
     db.collection('albums')
         .add({
-            user: getUser().uid,
+            user: uid || getUser().uid,
             title,
-            photos: [],
+            photos: photos || [],
             granted: [],
         })
 
@@ -32,33 +32,22 @@ export const renameAlbum = (id: string, newTitle: string) =>
         .doc(id)
         .update({ title: newTitle })
 
-export const prepareAddPhoto = async (albumId: string) => {
-    const { uid } = getUser()
+export const acceptPhotos = async (email: string, photos: Photo[], ownerId: string) => {
+    await addAlbum(email, photos, ownerId)
 
-    const albumRef = db.collection('albums').doc(albumId)
-    const albumDoc = await albumRef.get()
-    if (!albumDoc.exists) throw Error('No album')
-
-    const statRef = db.collection('stat').doc(uid)
+    const statRef = db.collection('stat').doc(ownerId)
     const statDoc = await statRef.get()
+    const stat = statDoc.data() as Refs
 
-    const array = albumDoc.data()!.photos as Photo[]
+    const newStat = photos.reduce((acc, { name }) => ({ 
+        ...acc, 
+        [name]: stat[name] + 1 
+    }), stat)
 
-    return (name: string, url: string) => {
-        if (array.some(photo => photo.name === name)) throw Error('Photo already in album')
-
-        const batch = db.batch()
-        const count: number = statDoc.data()?.[name] ?? 0
-
-        return batch.update(albumRef,
-            { photos: firebase.firestore.FieldValue.arrayUnion({ name, url } as Photo) }
-        )
-            .set(statRef, { [name]: count + 1 }, { merge: true })
-            .commit()
-    }
+    return statRef.set(newStat)
 }
 
-export const removePhotoFromAlbum = async (name: string, albumId: string) =>
+export const removePhotoFromAlbum = async (photo: string, albumId: string) =>
     db.runTransaction(async transaction => {
         const { uid } = getUser()
 
@@ -67,17 +56,17 @@ export const removePhotoFromAlbum = async (name: string, albumId: string) =>
         if (!albumDoc.exists) throw Error('No album')
 
         const array = albumDoc.data()!.photos as Photo[]
-        if (!array.some(photo => photo.name === name)) throw Error('Photo not in album')
+        if (!array.some(p => p.name === photo)) throw Error('Photo not in album')
 
         const statRef = db.collection('stat').doc(uid)
         const statDoc = await transaction.get(statRef)
         if (!statDoc.exists) throw Error('No ref doc')
 
-        const count: number = statDoc.data()?.[name] ?? 0
+        const count: number = statDoc.data()?.[photo] ?? 0
         if (!count) throw Error('No ref count')
 
-        transaction.update(albumRef, { photos: array.filter(photo => photo.name !== name) })
-            .set(statRef, { [name]: count - 1 }, { merge: true })
+        transaction.update(albumRef, { photos: array.filter(p => p.name !== photo) })
+            .set(statRef, { [photo]: count - 1 }, { merge: true })
 
         return count - 1
     })
@@ -107,4 +96,30 @@ export const removeAlbum = async (id: string) => {
 
     return photos.map(p => p.name)
         .filter(n => !newRefs[n])
+}
+
+export const prepareAddPhotos = async (albumId: string) => {
+    const { uid } = getUser()
+
+    const albumRef = db.collection('albums').doc(albumId)
+    const albumDoc = await albumRef.get()
+    if (!albumDoc.exists) throw Error('No album')
+
+    const statRef = db.collection('stat').doc(uid)
+    const statDoc = await statRef.get()
+
+    const array = albumDoc.data()!.photos as Photo[]
+
+    return (name: string, url: string) => {
+        if (array.some(photo => photo.name === name)) throw Error('Photo already in album')
+
+        const batch = db.batch()
+        const count: number = statDoc.data()?.[name] ?? 0
+
+        return batch.update(albumRef,
+            { photos: firebase.firestore.FieldValue.arrayUnion({ name, url } as Photo) }
+        )
+            .set(statRef, { [name]: count + 1 }, { merge: true })
+            .commit()
+    }
 }

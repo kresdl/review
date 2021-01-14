@@ -15,17 +15,15 @@ export type Titled = {
 }
 
 export type Album = Titled & {
+  user: string
   photos: Photo[]
 }
 
 export type SavedAlbum = HasId & Album
 
-export type Role = 'user' | 'guest'
-
 export type User = {
   uid: string
   email: string
-  role: Role
 }
 
 export type Photo = {

@@ -58,5 +58,8 @@
   },
   "devDependencies": {
     "@types/react-transition-group": "^4.4.0"
+  },
+  "engines": {
+    "node": "12.x"
   }
 }

@@ -5,7 +5,7 @@ import { Route, useRouteMatch } from 'react-router-dom'
 import { useAlbumChange } from 'lib/hooks'
 import { HasId } from 'types'
 import store from 'lib/store'
-import Photos from './Album/Photos'
+import PhotoSelector from './PhotoSelector'
 
 const Wrapper = styled.div`
     @media screen and (min-width: 768px) {
@@ -14,21 +14,21 @@ const Wrapper = styled.div`
 `
 
 const Guest: React.FC = () => {
-    const albumId = useRouteMatch<HasId>('/album/:id')!.params.id
+    const albumId = useRouteMatch<HasId>('/guest/:id')!.params.id
 
     useAlbumChange(albumId,
         album => store.setIndex({ [albumId]: album }),
-        []
+        [albumId]
     )
     
     return (
         <Wrapper>
             <main className="pt-5 px-3">
-                <Route exact path="/album/:id/:photo">
+                <Route exact path="/guest/:id/:photo">
                     <LightBox />
                 </Route>
-                <Route exact path="/album/:id">
-                    <Photos />
+                <Route exact path="/guest/:id">
+                    <PhotoSelector />
                 </Route>
             </main>
         </Wrapper>

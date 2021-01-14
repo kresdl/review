@@ -1,4 +1,4 @@
-import { addAlbum, removeAlbum, prepareAddPhoto, removePhotoFromAlbum } from "lib/db"
+import { addAlbum, removeAlbum, prepareAddPhotos, removePhotoFromAlbum } from "lib/db"
 import { del } from "lib/storage"
 import firebase from 'firebase/app'
 import { put } from "lib/storage"
@@ -32,7 +32,7 @@ export const uploadParallel = async (files: File[], albumId: string) => {
     let fragments = [...Array(files.length)].fill(0)
 
     try {
-        const add = await prepareAddPhoto(albumId)
+        const add = await prepareAddPhotos(albumId)
 
         await Promise.all(
             files.map(async (file, i) => {

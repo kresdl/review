@@ -2,11 +2,12 @@ import store from "lib/store"
 import { discardPhoto } from "lib/tools"
 import { observer } from "mobx-react-lite"
 import React, { CSSProperties } from "react"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
 import { HasId } from "types"
-import Thumbnail from "./Thumbnail"
+import Thumbnail from "components/Thumbnail"
+import CustomLink from "components/CustomLink"
 
 export const TRANSITION_DUR = 250
 
@@ -47,23 +48,23 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
     }
 
     return (
-        <div className="d-flex flex-wrap">
-            <TransitionGroup>
-                {
-                    photos.map(({ name, url }) => (
-                        <Transition key={name} timeout={TRANSITION_DUR}>
-                            {
-                                state => (
-                                    <Link to={`/album/${id}/${name}`} onClick={link.bind(name)}>
+        <TransitionGroup className="d-flex flex-wrap">
+            {
+                photos.map(({ name, url }) => (
+                    <Transition key={name} timeout={TRANSITION_DUR}>
+                        {
+                            state => (
+                                <div className="mb-4 b-4">
+                                    <CustomLink to={`/album/${id}/${name}`} onClick={link.bind(name)}>
                                         <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} />
-                                    </Link>
-                                )
-                            }
-                        </Transition>
-                    ))
-                }
-            </TransitionGroup>
-        </div>
+                                    </CustomLink>
+                                </div>
+                            )
+                        }
+                    </Transition>
+                ))
+            }
+        </TransitionGroup>
     )
 }
 
