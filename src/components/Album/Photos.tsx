@@ -35,7 +35,7 @@ type Props = {
 
 const Photos: React.FC<Props> = ({ deleteMode }) => {
     const { id } = useParams<HasId>()
-    const photos = store.index?.[id].photos
+    const photos = store.index[id]?.photos
     if (!photos) return null
 
     function link(this: string, evt: React.SyntheticEvent) {
@@ -54,7 +54,7 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
                         <Transition key={name} timeout={TRANSITION_DUR}>
                             {
                                 state => (
-                                    <Link to={{ pathname: '/mag', state: url }} onClick={link.bind(name)}>
+                                    <Link to={`/album/${id}/${name}`} onClick={link.bind(name)}>
                                         <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} />
                                     </Link>
                                 )

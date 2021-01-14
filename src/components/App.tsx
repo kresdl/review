@@ -3,7 +3,6 @@ import User from './User'
 import Splash from './Splash'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { Route } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import Guest from './Guest'
 import { Role } from 'types'
@@ -13,28 +12,10 @@ import useAuthChange from 'lib/hooks/use-auth-change'
 
 const queryClient = new QueryClient()
 
-const guestRoute = (
-    <Route exact path="/album/:id">
-        <Guest />
-    </Route>
-)
-
-const userRoute = (
-    <Route path="/">
-        <User />
-    </Route>
-)
-
-const defaultRoute = (
-    <Route path="/">
-        <Splash />
-    </Route>
-)
-
-const routes: Record<Role | 'default', React.ReactElement> = {
-    guest: guestRoute,
-    user: userRoute,
-    default: defaultRoute,
+const elements: Record<Role | 'default', React.ReactElement> = {
+    guest: <Guest />,
+    user: <User />,
+    default: <Splash />,
 }
 
 const App: React.FC = () => {
@@ -42,7 +23,7 @@ const App: React.FC = () => {
         user => {
             if (user) sessionStorage.setItem('user', JSON.stringify(user))
             else sessionStorage.removeItem('user')
-            store.setUser(user)
+            store.reset(user)
         },
         []
     )
@@ -51,9 +32,7 @@ const App: React.FC = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            {
-                routes[user?.role || 'default']
-            }
+            {elements[user?.role || 'default']}
             <ReactQueryDevtools />
         </QueryClientProvider>
     )

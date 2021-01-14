@@ -6,7 +6,6 @@ import AlbumRecord from './AlbumRecord'
 import Collapsable from './Collapsable'
 
 const Albums: React.FC = () => {
-    if (!store.index) return null
     const items = Object.values(store.index).sort(byTitle)
 
     return (

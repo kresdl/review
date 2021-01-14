@@ -28,7 +28,6 @@ type Props = {
 
 const AlbumRecord: React.FC<Props> = ({ title, id }) => {
     const [editing, setEditing] = useState(false)
-    if (!store.index) return null
 
     const progress = store.tasks[id]
     const uploading = typeof progress === 'number'

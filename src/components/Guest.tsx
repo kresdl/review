@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import LightBox from './LightBox'
-import { Route, useParams } from 'react-router-dom'
+import { Route, useRouteMatch } from 'react-router-dom'
 import { useAlbumChange } from 'lib/hooks'
 import { HasId } from 'types'
 import store from 'lib/store'
@@ -14,17 +14,17 @@ const Wrapper = styled.div`
 `
 
 const Guest: React.FC = () => {
-    const albumId = useParams<HasId>().id
+    const albumId = useRouteMatch<HasId>('/album/:id')!.params.id
 
     useAlbumChange(albumId,
-        album => store.setIndex({ [album.id]: album }),
+        album => store.setIndex({ [albumId]: album }),
         []
     )
     
     return (
         <Wrapper>
             <main className="pt-5 px-3">
-                <Route exact path="/mag">
+                <Route exact path="/album/:id/:photo">
                     <LightBox />
                 </Route>
                 <Route exact path="/album/:id">

@@ -1,6 +1,5 @@
-import firebase from 'firebase/app'
 import { action, observable, makeObservable } from 'mobx';
-import { Index, Role, Tasks, User } from 'types';
+import { Index, Tasks, User } from 'types';
 class Store {
     constructor() {
         makeObservable(this)
@@ -13,7 +12,7 @@ class Store {
     tasks: Tasks = {}
 
     @observable
-    index?: Index | null
+    index: Index = {}
 
     @observable
     message?: string | null
@@ -29,12 +28,19 @@ class Store {
         )
 
     @action
+    reset = (user?: User | null) => {
+        this.tasks = {}
+        this.user = user
+        this.index = {}
+    }
+
+    @action
     setUser = (user?: User | null) => {
         this.user = user
     }
 
     @action
-    setIndex = async (index: Index | null) => {
+    setIndex = async (index: Index) => {
         this.index = index
     }
 

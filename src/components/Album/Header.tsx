@@ -33,7 +33,7 @@ type Props = {
 
 const Header: React.FC<Props> = ({ setDeleteMode }) => {
     const { id } = useParams<HasId>()
-    const title = store.index?.[id].title
+    const title = store.index[id]?.title
     if (!title) return null
 
     const selectFiles = (files: File[]) => uploadParallel(files, id)

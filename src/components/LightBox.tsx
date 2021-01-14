@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
+import store from 'lib/store'
 import React from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 const Bg = styled.div<{ url: string }>`
     top: 0;
@@ -15,12 +16,19 @@ const Bg = styled.div<{ url: string }>`
     background-size: contain;
 `
 
+type Params = {
+    id: string
+    photo: string
+}
+
 const LightBox: React.FC = () => {
-    const location = useLocation<string>()
     const history = useHistory()
+    const { id, photo } = useParams<Params>()!
+    const url = store.index[id].photos.find(p => photo === p.name)?.url
+    if (!url) return null
 
     return (
-        <Bg url={location.state} onClick={history.goBack}/>
+        <Bg url={url} onClick={history.goBack}/>
     )
 }
 
