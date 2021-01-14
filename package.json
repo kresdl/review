@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-transition-group": "^4.4.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -55,9 +56,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react-transition-group": "^4.4.0"
   },
   "engines": {
     "node": "12.x"
