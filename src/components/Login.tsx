@@ -16,11 +16,9 @@ const Login: React.FC = () => {
         store.notify('Attempting to log in...')
 
         try {
-            const cred = await auth.signInWithEmailAndPassword(email, password)
-            const uid = cred.user!.uid
-            sessionStorage.setItem('uid', uid)
+            await auth.signInWithEmailAndPassword(email, password)
             store.notify(null)
-            history.push('/user/albums')
+            history.push('/albums')
 
         } catch (err) {
             store.notify(err)

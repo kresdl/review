@@ -14,24 +14,24 @@ const Center = styled.main`
   width: 20rem;
 `
 
-const Splash: React.FC = () => (  
-  <>
-    <header className="jumbotron">
-      <H1 className="text-center display-1 text-primary">Photo album X2000</H1>
-      <p className="lead text-center">Your pixel pusher in cyberspace</p>
-    </header>
-    <Center className="mx-auto pt-5">
-      <Switch>
-        <Route path="/register">
-          <Register />
-        </Route>
-        <Route path="/">
-          <Login />
-        </Route>
-      </Switch>
-      {store.message && <p className="m-0">{store.message}</p>}
-    </Center>
-  </>
+const Splash: React.FC = () => (
+    <>
+        <header className="jumbotron">
+            <H1 className="text-center display-1 text-primary">Photo album X2000</H1>
+            <p className="lead text-center">Your pixel pusher in cyberspace</p>
+        </header>
+        <Center className="mx-auto pt-5">
+            <Switch>
+                <Route exact path="/register">
+                    <Register />
+                </Route>
+                <Route exact path="/">
+                    <Login />
+                </Route>
+            </Switch>
+            {store.message && <p className="m-0">{store.message}</p>}
+        </Center>
+    </>
 )
 
 export default observer(Splash)

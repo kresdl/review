@@ -1,26 +1,28 @@
 import firebase from 'firebase/app'
-import { Album, Index, Photo, SavedAlbum } from 'types'
+import { Photo } from 'types'
 import { getUser } from './auth'
 
 type Refs = Record<string, number>
 
 const db = firebase.firestore()
 
+export default db
+
 export const addUser = (id: string, name: string, lastName: string, email: string) =>
     db.collection('users')
         .doc(id)
         .set({ name, lastName, email })
 
-export const grantGuest = (email: string, albumId: string) => 
+export const grantGuest = (email: string, albumId: string) =>
     db.collection('albums')
         .doc(albumId)
         .update({ granted: firebase.firestore.FieldValue.arrayUnion(email) })
 
 export const addAlbum = (title: string) =>
     db.collection('albums')
-        .add({ 
+        .add({
             user: getUser().uid,
-            title, 
+            title,
             photos: [],
             granted: [],
         })
@@ -106,22 +108,3 @@ export const removeAlbum = async (id: string) => {
     return photos.map(p => p.name)
         .filter(n => !newRefs[n])
 }
-
-export const subscribe = (onUpdate: (index: Index) => void) =>
-    db.collection('albums')
-        .where('user', '==', getUser().uid)
-        .onSnapshot(
-            async snapshot => {
-                const index = snapshot.docs.reduce<Index>((acc, doc) => {
-                    const album = doc.data() as Album
-                    const saved = { id: doc.id, ...album } as SavedAlbum
-                    return {
-                        ...acc,
-                        [doc.id]: saved
-                    }
-                }, {})
-
-                onUpdate(index)
-            },
-            console.log
-        )

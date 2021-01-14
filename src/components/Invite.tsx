@@ -9,7 +9,7 @@ const invite = async (albumId: string, albumName: string) => {
     if (!email) return
 
     const settings = {
-        url: 'http://localhost:3000/user/albums',
+        url: 'http://localhost:3000/album/' + albumId,
         handleCodeInApp: true,
     };
 
@@ -28,7 +28,7 @@ type Props = {
 }
 
 const Invite: React.FC<Props & HTMLAttributes<HTMLButtonElement>> = ({ size, albumId, albumName, ...rest }) => (
-    <ImageButton onClick={() => invite(albumId, albumId)} size={size} url={svg} {...rest} />
+    <ImageButton onClick={() => invite(albumId, albumName)} size={size} url={svg} {...rest} />
 )
 
 export default Invite

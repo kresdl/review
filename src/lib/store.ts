@@ -1,18 +1,19 @@
+import firebase from 'firebase/app'
 import { action, observable, makeObservable } from 'mobx';
-import { Index, Tasks } from 'types';
+import { Index, Role, Tasks, User } from 'types';
 class Store {
     constructor() {
         makeObservable(this)
     }
+    
+    @observable
+    user?: User | null
 
     @observable
     tasks: Tasks = {}
 
     @observable
     index?: Index | null
-
-    @observable
-    uid?: string | null
 
     @observable
     message?: string | null
@@ -28,8 +29,8 @@ class Store {
         )
 
     @action
-    setUser = (uid?: string | null) => {
-        this.uid = uid
+    setUser = (user?: User | null) => {
+        this.user = user
     }
 
     @action

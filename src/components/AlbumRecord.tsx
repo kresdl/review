@@ -47,7 +47,7 @@ const AlbumRecord: React.FC<Props> = ({ title, id }) => {
                 editing
                     ? <Edit onAccept={accept} onCancel={cancel} initial={title} />
                     : <>
-                        <Link className="mr-2" to={`/user/album/${id}`}>
+                        <Link className="mr-2" to={`/album/${id}`}>
                             <H2 className="mb-0">{title}</H2>
                         </Link>
                         <ImageButton className="mr-2" size={20} url={pencilSvg} onClick={edit} />

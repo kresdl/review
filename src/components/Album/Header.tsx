@@ -9,6 +9,7 @@ import { uploadParallel } from 'lib/tools'
 import Invite from '../Invite'
 import closeIcon from 'images/close.svg'
 import Toggle from 'components/Toggle'
+import { HasId } from 'types'
 
 const activeStyle = { transform: 'scale(1.75)' }
 
@@ -26,16 +27,12 @@ const H2 = styled.h2`
     font-weight: 100;
 `
 
-type Params = {
-    id: string
-}
-
 type Props = {
     setDeleteMode: (state: boolean) => void
 }
 
 const Header: React.FC<Props> = ({ setDeleteMode }) => {
-    const { id } = useParams<Params>()
+    const { id } = useParams<HasId>()
     const title = store.index?.[id].title
     if (!title) return null
 

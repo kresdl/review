@@ -5,6 +5,9 @@ import AlbumEditor from './AlbumEditor'
 import Album from './Album/index'
 import LightBox from './LightBox'
 import { Route } from 'react-router-dom'
+import { useIndexChange } from 'lib/hooks'
+import store from 'lib/store'
+import { getUserFromStorage } from 'lib/util'
 
 const Wrapper = styled.div`
   @media screen and (min-width: 768px) {
@@ -12,23 +15,28 @@ const Wrapper = styled.div`
   }
 `
 
-const User: React.FC = () => (
-    <Wrapper className="row no-gutters">
-        <header className="col-md-auto">
-            <Sidebar />
-        </header>
-        <main className="col-md pt-5 px-3">
-            <Route path="/user/albums">
-                <AlbumEditor />
-            </Route>
-            <Route path="/user/mag">
-                <LightBox />
-            </Route>
-            <Route path="/user/album/:id">
-                <Album />
-            </Route>
-        </main>
-    </Wrapper>
-)
+const User: React.FC = () => {
+    const uid = getUserFromStorage()?.uid
+    useIndexChange(uid || null, store.setIndex, [uid])
+
+    return (
+        <Wrapper className="row no-gutters">
+            <header className="col-md-auto">
+                <Sidebar />
+            </header>
+            <main className="col-md pt-5 px-3">
+                <Route exact path="/albums">
+                    <AlbumEditor />
+                </Route>
+                <Route exact path="/mag">
+                    <LightBox />
+                </Route>
+                <Route exact path="/album/:id">
+                    <Album />
+                </Route>
+            </main>
+        </Wrapper>
+    )
+}
 
 export default User

@@ -1,4 +1,4 @@
-export default (e: any) => {
-    console.log(e)
+export default (...e: any[]) => {
+    console.log('tap: ', ...e)
     return e;
 }

@@ -11,13 +11,12 @@ const Nav = styled.nav`
 const Sidebar: React.FC = () => {
     const history = useHistory()
     const location = useLocation()
-    const logout = location.pathname === '/user/logout'
+    const logout = location.pathname === '/logout'
 
     useEffect(
         () => () => {
             auth.signOut()
                 .then(() => {
-                    sessionStorage.removeItem('uid')
                     store.notify(null)
                     history.push('/')
                 })
@@ -27,10 +26,10 @@ const Sidebar: React.FC = () => {
 
     return (
         <Nav className="nav flex-md-column text-light h-100 px-md-5 pt-md-5 py-2">
-            <NavLink className="nav-link" to="/user/photos">Photos</NavLink>
-            <NavLink className="nav-link" to="/user/albums">Albums</NavLink>
-            <NavLink className="nav-link mb-md-4" to="/user/organize">Organizer</NavLink>
-            <NavLink className="nav-link" to="/user/logout">Logout</NavLink>
+            <NavLink className="nav-link" to="/photos">Photos</NavLink>
+            <NavLink className="nav-link" to="/albums">Albums</NavLink>
+            <NavLink className="nav-link mb-md-4" to="/organize">Organizer</NavLink>
+            <NavLink className="nav-link" to="/logout">Logout</NavLink>
         </Nav>
     )
 }

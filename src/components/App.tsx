@@ -1,54 +1,59 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import User from './User'
 import Splash from './Splash'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import { Switch, Route } from 'react-router-dom'
-import store from 'lib/store'
+import { Route } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
-import auth from 'lib/auth'
-import { subscribe } from 'lib/db'
+import Guest from './Guest'
+import { Role } from 'types'
+import store from 'lib/store'
+import { getUserFromStorage } from 'lib/util'
+import useAuthChange from 'lib/hooks/use-auth-change'
 
 const queryClient = new QueryClient()
 
+const guestRoute = (
+    <Route exact path="/album/:id">
+        <Guest />
+    </Route>
+)
+
+const userRoute = (
+    <Route path="/">
+        <User />
+    </Route>
+)
+
+const defaultRoute = (
+    <Route path="/">
+        <Splash />
+    </Route>
+)
+
+const routes: Record<Role | 'default', React.ReactElement> = {
+    guest: guestRoute,
+    user: userRoute,
+    default: defaultRoute,
+}
+
 const App: React.FC = () => {
+    useAuthChange(
+        user => {
+            if (user) sessionStorage.setItem('user', JSON.stringify(user))
+            else sessionStorage.removeItem('user')
+            store.setUser(user)
+        },
+        []
+    )
 
-    useEffect(() => {
-        let unsubscribe: () => void
-
-        auth.onAuthStateChanged(user => {
-            store.setUser(user?.uid)
-            unsubscribe && unsubscribe()
-
-            if (!store.uid)
-                store.setIndex(null)
-            else
-                unsubscribe = subscribe(store.setIndex)
-        })
-
-        if (auth.isSignInWithEmailLink(window.location.href)) {
-            const email = window.prompt('Ange din email-adress för verifikation');
-            if (!email) return
-
-            auth.signInWithEmailLink(email, window.location.href)
-                .then(console.log)
-                .catch(alert);
-        }
-    }, [])
+    const user = store.user || getUserFromStorage() // Kringgår en onödig redirect
 
     return (
         <QueryClientProvider client={queryClient}>
-            <Switch>
-                {
-                    store.uid &&
-                    <Route path="/user">
-                        <User />
-                    </Route>
-                }
-                <Route exact path={['/', '/register']}>
-                    <Splash />
-                </Route>
-            </Switch>
+            {
+                routes[user?.role || 'default']
+            }
             <ReactQueryDevtools />
         </QueryClientProvider>
     )

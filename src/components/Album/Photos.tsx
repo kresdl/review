@@ -5,6 +5,7 @@ import React, { CSSProperties } from "react"
 import { Link, useParams } from "react-router-dom"
 import { Transition, TransitionGroup } from "react-transition-group"
 import { TransitionStatus } from "react-transition-group/Transition"
+import { HasId } from "types"
 import Thumbnail from "./Thumbnail"
 
 export const TRANSITION_DUR = 250
@@ -28,16 +29,12 @@ const states: Partial<Record<TransitionStatus, CSSProperties>> = {
     }
 }
 
-type Params = {
-    id: string
-}
-
 type Props = {
-    deleteMode: boolean
+    deleteMode?: boolean
 }
 
 const Photos: React.FC<Props> = ({ deleteMode }) => {
-    const { id } = useParams<Params>()
+    const { id } = useParams<HasId>()
     const photos = store.index?.[id].photos
     if (!photos) return null
 
@@ -57,7 +54,7 @@ const Photos: React.FC<Props> = ({ deleteMode }) => {
                         <Transition key={name} timeout={TRANSITION_DUR}>
                             {
                                 state => (
-                                    <Link to={{ pathname: '/user/mag', state: url }} onClick={link.bind(name)}>
+                                    <Link to={{ pathname: '/mag', state: url }} onClick={link.bind(name)}>
                                         <Thumbnail mb="1.5rem" mr="1.5rem" key={name} url={url} style={states[state]} />
                                     </Link>
                                 )
