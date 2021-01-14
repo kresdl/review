@@ -8,11 +8,10 @@ const Label = styled.label`
 `
 
 type Props = {
-    label: string
     onPick: (files: File[]) => void
 }
 
-const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, className, label, ...props }) => {
+const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, className, ...props }) => {
     const change: React.ChangeEventHandler = (evt) => {
         const em = evt.target as HTMLInputElement
         const filelist = em.files
@@ -25,7 +24,7 @@ const FileInput: React.FC<Props & Extend<HTMLInputElement>> = ({ onPick, classNa
     return (
         <Label className={'mb-0 ' + className}>
             <input type="file" className="d-none" onChange={change} {...props} />
-            <img src={uploadSvg} alt="" width={40} />
+            <img src={uploadSvg} alt="file-input-icon" width={40} />
         </Label>
     )
 }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { HTMLAttributes } from 'react'
 
 type Props = {
     onAccept: (text: string) => void
@@ -6,7 +6,7 @@ type Props = {
     initial?: string
 }
 
-const Edit: React.FC<Props> = ({ onAccept, onCancel, initial }) => {
+const Edit: React.FC<Props & HTMLAttributes<HTMLInputElement>> = ({ onAccept, onCancel, initial, ...props }) => {
 
     const accept = (evt: React.SyntheticEvent<HTMLInputElement>) => {
         const { value } = evt.target as HTMLInputElement
@@ -22,7 +22,7 @@ const Edit: React.FC<Props> = ({ onAccept, onCancel, initial }) => {
     }
 
     return (
-        <input required autoFocus onBlur={accept} className="flex-grow-1 mr-2 form-control" onKeyDown={input} type="text" defaultValue={initial}></input>
+        <input required autoFocus onBlur={accept} className="flex-grow-1 mr-2 form-control" onKeyDown={input} type="text" defaultValue={initial} {...props}></input>
     )
 }
 

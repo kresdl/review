@@ -10,6 +10,7 @@ import { getUserFromStorage } from 'lib/util'
 import useAuthChange from 'lib/hooks/use-auth-change'
 import { useCatchGuest } from 'lib/hooks'
 import { Route, Switch } from 'react-router-dom'
+import useLogout from 'lib/hooks/use-logout'
 
 const queryClient = new QueryClient()
 
@@ -27,8 +28,9 @@ const App: React.FC = () => {
         if (user) sessionStorage.setItem('user', JSON.stringify(user))
         else sessionStorage.removeItem('user')
         store.reset(user)
-    }, []
-    )
+    }, [])
+
+    useLogout('/logout')
 
     const user = store.user || getUserFromStorage() // Kringgå en onödig redirect
 

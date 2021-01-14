@@ -24,7 +24,7 @@ const Toggle: React.FC<Props & HTMLAttributes<HTMLInputElement>> = ({ imageSize,
 
     return (
         <Label style={active ? activeStyle : style} className={className}>
-            {imageUrl && <img width={imageSize} src={imageUrl} alt="" />}
+            {imageUrl && <img width={imageSize} src={imageUrl} alt="toggle-control-icon" />}
             <input className="d-none" type="checkbox" {...rest} onChange={change} />
         </Label>
     )
