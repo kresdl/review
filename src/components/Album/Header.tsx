@@ -5,19 +5,13 @@ import store from 'lib/store'
 import Progress from '../Progress'
 import styled from '@emotion/styled'
 import { observer } from 'mobx-react-lite'
-import { uploadParallel } from 'lib/tools'
+import { discardPhotos, uploadParallel } from 'lib/tools'
 import Invite from '../Invite'
 import closeIcon from 'images/close.svg'
-import Toggle from 'components/Toggle'
+import albumIcon from 'images/photo-album.svg'
 import { HasId } from 'types'
-
-const activeStyle = { transform: 'scale(1.75)' }
-
-const DeletePhoto = styled(Toggle)`
-    position: relative;
-    transition: transform 250ms;
-    transform: translateZ(0);
-`
+import ImageButton from 'components/ImageButton'
+import { clonePhotos } from 'lib/db'
 
 const Wrapper = styled.div`
     height: 3rem;
@@ -28,15 +22,27 @@ const H2 = styled.h2`
 `
 
 type Props = {
-    setDeleteMode: (state: boolean) => void
+    selection: React.MutableRefObject<string[]>
 }
 
-const Header: React.FC<Props> = ({ setDeleteMode }) => {
+const Header: React.FC<Props> = ({ selection }) => {
     const { id } = useParams<HasId>()
     const title = store.index[id]?.title
     if (!title) return null
 
     const selectFiles = (files: File[]) => uploadParallel(files, id)
+
+    const discard = () => {
+        discardPhotos(selection.current, id).catch(console.error)
+    }
+
+    const clone = () => {
+        const album = store.index[id]
+        const selected = album.photos.filter(p => selection.current.includes(p.name))
+        const albumName = prompt("Album name")
+        if (!albumName) return
+        clonePhotos(selected, albumName).catch(console.error)
+    }
 
     const progress = store.tasks[id]
     const uploading = typeof progress === 'number'
@@ -46,7 +52,8 @@ const Header: React.FC<Props> = ({ setDeleteMode }) => {
             <Wrapper className="d-flex align-items-center">
                 <H2 className="mr-4">{title}</H2>
                 <FileInput className="mr-4" multiple required onPick={selectFiles} label="Upload photo" />
-                <DeletePhoto className="mr-4 m" imageSize={25} imageUrl={closeIcon} activeStyle={activeStyle} onToggle={setDeleteMode} />
+                <ImageButton className="mr-4 m" imageSize={25} url={closeIcon} onClick={discard}/>
+                <ImageButton className="mr-4 m" imageSize={35} url={albumIcon} onClick={clone}/>
                 <Invite className="mr-4" size={35} albumName={title} albumId={id} />
                 {uploading && <Progress value={progress!} />}
             </Wrapper>

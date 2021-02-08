@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-transition-group": "^4.4.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -15,6 +14,7 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.7",
+    "@types/react-transition-group": "^4.4.0",
     "@types/styled-system": "^5.1.10",
     "bootstrap": "^4.5.3",
     "dotenv": "^8.2.0",

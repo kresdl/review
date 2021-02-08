@@ -28,10 +28,7 @@ const User: React.FC = () => {
                 <Route exact path="/albums">
                     <AlbumEditor />
                 </Route>
-                <Route exact path="/album/:id/:photo">
-                    <LightBox />
-                </Route>
-                <Route exact path="/album/:id">
+                <Route path="/album/:id">
                     <Album />
                 </Route>
             </main>

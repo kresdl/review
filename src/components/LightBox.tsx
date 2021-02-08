@@ -14,6 +14,7 @@ const Bg = styled.div<{ url: string }>`
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+    z-index: 2;
 `
 
 type Params = {

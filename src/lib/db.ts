@@ -32,6 +32,22 @@ export const renameAlbum = (id: string, newTitle: string) =>
         .doc(id)
         .update({ title: newTitle })
 
+export const clonePhotos = async (photos: Photo[], albumName: string) => {
+    await addAlbum(albumName, photos)
+    const { uid } = getUser()
+
+    const statRef = db.collection('stat').doc(uid)
+    const statDoc = await statRef.get()
+    const stat = statDoc.data() as Refs
+
+    const newStat = photos.reduce((acc, { name }) => ({
+        ...acc,
+        [name]: stat[name] + 1
+    }), stat)
+
+    return statRef.set(newStat)
+}
+
 export const acceptPhotos = async (email: string, photos: Photo[], ownerId: string) => {
     await addAlbum(email, photos, ownerId)
 
@@ -39,9 +55,9 @@ export const acceptPhotos = async (email: string, photos: Photo[], ownerId: stri
     const statDoc = await statRef.get()
     const stat = statDoc.data() as Refs
 
-    const newStat = photos.reduce((acc, { name }) => ({ 
-        ...acc, 
-        [name]: stat[name] + 1 
+    const newStat = photos.reduce((acc, { name }) => ({
+        ...acc,
+        [name]: stat[name] + 1
     }), stat)
 
     return statRef.set(newStat)

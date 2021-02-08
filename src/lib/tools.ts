@@ -1,4 +1,4 @@
-import { addAlbum, removeAlbum, prepareAddPhotos, removePhotoFromAlbum } from "lib/db"
+import { removeAlbum, prepareAddPhotos, removePhotoFromAlbum } from "lib/db"
 import { del } from "lib/storage"
 import firebase from 'firebase/app'
 import { put } from "lib/storage"
@@ -57,14 +57,17 @@ export const uploadParallel = async (files: File[], albumId: string) => {
     }
 }
 
-export const discardPhoto = async (photo: string, albumId: string) => {
+export const discardPhotos = async (photos: string[], albumId: string) => {
     const update = store.getTaskControls(albumId)
     update(1)
 
     try {
-        const count = await removePhotoFromAlbum(photo, albumId)
+        const counts = await Promise.all(
+            photos.map(photo => removePhotoFromAlbum(photo, albumId))
+        )
         update(null)
-        if (!count) await del(photo)
+        const toDelete = photos.filter((_, i) => !counts[i])
+        await Promise.all(toDelete.map(del))
     } catch (err) {
         update(null)
         console.log(err)
@@ -81,14 +84,6 @@ export const discardAlbum = async (id: string) => {
         await Promise.all(toDelete.map(del))
     } catch (err) {
         update(null)
-        console.log(err)
-    }
-}
-
-export const createAlbum = async (album: string) => {
-    try {
-        await addAlbum(album)
-    } catch (err) {
         console.log(err)
     }
 }

@@ -4,14 +4,13 @@ import { User } from 'types'
 
 const useAuthChange = (onAuthChange: (user: User | null) => void, dependencies: any[]) => {
     useEffect(() => {
-        auth.onAuthStateChanged(user => {
+        return auth.onAuthStateChanged(user => {
             const usr = user && {
                 uid: user.uid,
                 email: user.email!,
             }
             onAuthChange(usr)
-        })
-        
+        })        
     }, dependencies)
 }
 

@@ -32,6 +32,7 @@ class Store {
         this.tasks = {}
         this.user = user
         this.index = {}
+        this.message = null
     }
 
     @action
