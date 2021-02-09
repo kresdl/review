@@ -33,7 +33,6 @@ const Register: React.FC = () => {
         try {
             const cred = await auth.createUserWithEmailAndPassword(email, password)
             await addUser(cred.user!.uid, name, lastName, email)
-            store.notify('Register successful!')
             history.push('/')
 
         } catch (err) {
