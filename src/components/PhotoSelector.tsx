@@ -50,9 +50,7 @@ const PhotoSelector: React.FC = () => {
         try {
             await acceptPhotos(getUser().email!, selected, album.user)
             alert('Tack!')
-            store.reset()
             await auth.signOut()
-            history.push('/')
         } catch (err) {
             console.log(err)
         }

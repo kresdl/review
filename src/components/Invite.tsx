@@ -9,7 +9,7 @@ const invite = async (albumId: string, albumName: string) => {
     if (!email) return
 
     const settings = {
-        url: 'http://localhost:3000/guest/' + albumId,
+        url: window.location.origin + '/guest/' + albumId,
         handleCodeInApp: true,
     };
 
